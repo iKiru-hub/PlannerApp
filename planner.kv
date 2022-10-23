@@ -1,0 +1,1971 @@
+WindowManager:
+    ActivityWindow:
+    ScheduleWindow:
+    NewSessionWindow:
+    ResultsWindow:
+    FocusTimer:
+    RestTimer:
+    IdleTimer:
+    ExtraFocusTimer:
+    SimpleTimer:
+    SimpleTimerSetting:
+    ExtraSimpleTimer:
+    GeneralSettings:
+    IntervalHandler:
+    NewJob:
+    ProjectWindow:
+    NewMiniTask:
+
+
+<ActivityWindow>:
+    name: "activity_window"
+    main_image: main_image
+    close_button: close_button
+    focus_button: focus_button
+    schedule_button: schedule_button
+    settings_button: settings_button
+    timer_button: timer_button
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.545, 0.831, 0.816, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # schedule
+        Button:
+            id: schedule_button
+            size: 166, 200
+            size_hint: None, None
+            pos_hint: {"x": 0.11, "y": 0.2}
+            on_press:
+                root.button_pressed(name='schedule')
+
+            on_release:
+                root.button_released()
+                app.root.current = "schedule_window"
+                root.manager.transition.direction = "left"
+
+        # focus
+        Button:
+            id: focus_button
+            size_hint: 0.23, 0.17
+            pos_hint: {"x": 0.542, "y": 0.315}
+            on_press:
+                root.button_pressed(name='focus')
+
+            on_release:
+                root.button_released()
+                app.root.current = "newsession_window"
+                app.root.current_screen.reset()
+                root.manager.transition.direction = "left"
+
+
+        # close
+        Button:
+            id: close_button
+            size_hint: 0.058, 0.08
+            pos_hint: {"x": 0.91, "y": 0.04}
+
+            on_press:
+                root.button_pressed(name='close')
+
+            on_release:
+                root.button_released()
+                app.stop()
+
+
+        # settings
+        Button:
+            id: settings_button
+            size_hint: 0.061, 0.08
+            pos_hint: {"x": 0.827 , "y": 0.04}
+
+            on_press:
+                root.button_pressed(name='settings')
+
+            on_release:
+                root.button_released()
+                app.root.current = "general_settings"
+                app.root.current_screen.reset()
+                root.manager.transition.direction = "left"
+
+        # simple timer
+        Button:
+            id: timer_button
+            size_hint: 0.09, 0.115
+            pos_hint: {"x": 0.858, "y": 0.84}
+
+            on_press:
+                root.button_pressed(name='timer')
+
+            on_release:
+                root.button_released(name='timer')
+                app.root.current = "simple_timer_setting"
+                app.root.current_screen.reset()
+                root.manager.transition.direction = "left"
+
+
+        # star routine
+        Button:
+            id: timer_button
+            size_hint: 0.09, 0.115
+            pos_hint: {"x": 0.4, "y": 0.84}
+
+            on_press:
+                root.button_pressed(name='star')
+
+            on_release:
+                root.button_released()
+
+        Image:
+            id: main_image
+            source: 'media/main_screen/main_screen_zero.png'
+
+
+<ScheduleWindow>:
+
+    name: "schedule_window"
+    jobs_manager: jobs_manager
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.85, 1, 0.9, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # Columns
+        GridLayout:
+
+            pos_hint: {"x": 0, "top": 1.44}
+            # size_hint: 1, 0.1
+            cols: 6
+
+            Label:
+                text: ""
+
+            Label:
+                text: "TASK"
+                color: 0.2, 0.7, 0.3, 1
+                bold: True
+
+            Label:
+                text: "SCORE"
+                color: 0.2, 0.7, 0.3, 1
+                bold: True
+
+            Label:
+                text: "DEADLINE"
+                color: 0.2, 0.7, 0.3, 1
+                bold: True
+
+            Label:
+                text: "STATUS"
+                color: 0.2, 0.7, 0.3, 1
+                bold: True
+
+            Label:
+                text: "OPTIONS"
+                color: 0.2, 0.7, 0.3, 1
+                bold: True
+
+
+        # Commands
+        BoxLayout:
+
+            orientation: "horizontal"
+            pos_hint: {"x": 0.26, "y": 0.01}
+            size_hint: 0.48, 0.1
+            spacing: 30
+
+            # add
+            Button:
+                on_press:
+                    app.root.current_screen.jobs_manager.add_job()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/add_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            # save
+            Button:
+                on_press:
+                    app.root.current_screen.jobs_manager.save_pending()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/save_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            # return
+            Button:
+                on_press:
+                    app.root.current = "activity_window"
+                    app.root.transition.direction = "right"
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/return3_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            # quit
+            Button:
+                on_press:
+                    app.stop()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/quit_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+        JobsManager:
+            id: jobs_manager
+
+
+<NewSessionWindow>:
+
+    name: "newsession_window"
+
+    focus_interval: focus_interval
+    rest_interval: rest_interval
+    repetition: repetition
+    start_button: start_button
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.8, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            text: "Session Settings"
+            pos_hint: {"x": 0., "top": 1.4}
+            bold: True
+            font_size: 29
+            color: 0.3, 0.4, 1, 1
+
+
+        BoxLayout:
+
+            orientation: 'vertical'
+            pos_hint: {"x": 0.1, "y": 0.2}
+            size_hint: 1, 0.5
+
+            spacing: 20
+
+            GridLayout:
+                cols: 2
+                size_hint: 0.5, 0.7
+
+                Label:
+                    text: "Focus interval"
+                    color: 0.1, 0.3, 0.5, 1
+                    font_size: 17
+
+                TextInput:
+                    id: focus_interval
+                    text: "20"
+                    multiline: False
+
+                    background_color: 0.8, 0.8, 1, 1
+                    base_direction: "rtl"
+                    padding_y: 25, 25
+                    padding_x: 5, 70
+
+            GridLayout:
+                cols: 2
+                size_hint: 0.5, 0.7
+
+                Label:
+                    text: "Rest interval"
+                    color: 0.1, 0.3, 0.5, 1
+                    font_size: 17
+
+                TextInput:
+                    id: rest_interval
+                    text: "5"
+                    multiline: False
+
+                    background_color: 0.8, 0.8, 1, 1
+                    base_direction: "rtl"
+                    padding_y: 25, 25
+                    padding_x: 5, 70
+
+            GridLayout:
+
+                cols: 2
+                size_hint: 0.5, 0.7
+
+                Label:
+                    text: "repetition"
+                    color: 0.1, 0.3, 0.5, 1
+                    font_size: 17
+
+                TextInput:
+                    id: repetition
+                    text: "2"
+                    multiline: False
+
+                    background_color: 0.8, 0.8, 1, 1
+                    base_direction: "rtl"
+                    padding_y: 25, 25
+                    padding_x: 5, 70
+
+        Button:
+            id: start_button
+            text: "start"
+            font_size: 35
+            pos_hint: {"x": 0.73, "y": 0.3}
+            size_hint: 0.2, 0.3
+            background_color: (0.2, 0.2, 0.7, 0.3)
+
+            on_press:
+                root.check_inputs()
+                if root.saved: app.root.current = "interval_handler"
+                if root.saved: app.root.transition.direction = "left"
+                if root.saved: app.root.current_screen.load_data(data=root.settings)
+
+        Button:
+            pos_hint: {"x": 0.88, "y": 0.03}
+            size_hint: 0.049, 0.06
+
+            on_press:
+                app.root.current = "activity_window"
+                app.root.transition.direction = "right"
+
+            background_down: ''
+            background_normal: ''
+            background_color: 0.7, 0.8, 1, 1
+
+            Image:
+                source: "media/return_icon_.png"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                size: self.parent.size
+
+
+<IntervalHandler>:
+
+    name: "interval_handler"
+    background_color: 0.2, 0.5, 0.2, 1
+
+
+<ResultsWindow>:
+
+    name: "results_window"
+    background_color: 0.2, 0.5, 0.2, 1
+
+    tot_focus: tot_focus
+    tot_rest: tot_rest
+    tot_idle: tot_idle
+    state: state
+
+    Label:
+        text: "Session Results"
+        pos_hint: {"x": 0., "top": 1.4}
+        bold: True
+        font_size: 30
+
+    GridLayout:
+        pos_hint: {"x": 0., "top": 0.8}
+        size_hint: 1, 0.7
+        cols: 2
+        rows: 4
+
+        Label:
+            text: "total focus time:"
+            font_size: 24
+        Label:
+            id: tot_focus
+            text: "0"
+            font_size: 24
+
+        Label:
+            text: "total rest time:"
+            font_size: 24
+        Label:
+            id: tot_rest
+            text: "0"
+            font_size: 24
+
+        Label:
+            text: "total idle time:"
+            font_size: 24
+        Label:
+            id: tot_idle
+            text: "0"
+            font_size: 24
+
+        Label:
+            text: "completed:"
+            font_size: 24
+        Label:
+            id: state
+            text: "False"
+            font_size: 24
+            bold: True
+            color: 0.9, 0.1, 0.1, 1
+
+
+    Button:
+        pos_hint: {"right": 1., "top": 0.1}
+        size_hint: 0.1, 0.1
+        text: "close"
+        on_press:
+            root.forward_data()
+
+
+
+# Interval Windows #
+
+<FocusTimer>:
+
+    name: "focus_timer"
+    background_color: 0.2, 0.9, 0.2, 1
+
+    display: display
+    play_pause: play_pause
+    play_pause_icon: play_pause_icon
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.4, 0.9, 0.4, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # title
+        Label:
+            text: "FOCUS"
+            font_size: 24
+            bold: True
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1.41}
+
+        # timer display
+        Label:
+            id: display
+            text: "00:10"
+            font_size: 70
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1}
+
+        # buttons
+        BoxLayout:
+
+            orientation: "horizontal"
+            pos_hint: {"x": 0.225, "y": 0.04}
+            size_hint: 0.55, 0.1
+            spacing: 30
+
+            Button:
+                id: play_pause
+                on_press:
+                    root.update()
+
+                Image:
+                    id: play_pause_icon
+                    source: "media/play_iconG.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.reset()
+
+                Image:
+                    source: "media/repeat_iconG.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.close()
+
+                Image:
+                    source: "media/next_iconG.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.quit()
+
+                Image:
+                    source: "media/return_iconG.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+<RestTimer>:
+
+    name: "rest_timer"
+    background_color: 0.9, 0.2, 0.2, 1
+
+    display: display
+
+    FloatLayout:
+
+        display: display
+
+        canvas.before:
+            Color:
+                rgba: 0.9, 0.4, 0.4, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # title
+        Label:
+            text: "REST"
+            font_size: 24
+            bold: True
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1.41}
+
+        # timer display
+        Label:
+            id: display
+            text: "00:10"
+            font_size: 70
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1}
+
+        # buttons
+        BoxLayout:
+
+            orientation: "horizontal"
+            pos_hint: {"x": 0.3, "y": 0.04}
+            size_hint: 0.4, 0.1
+            spacing: 30
+
+            Button:
+                on_press:
+                    root.close()
+
+                Image:
+                    source: "media/next_iconR.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.reset()
+
+                Image:
+                    source: "media/repeat_iconR.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.quit()
+
+                Image:
+                    source: "media/return_iconR.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+<IdleTimer>:
+
+    name: "idle_timer"
+    background_color: 0.3, 0.3, 0.9, 1
+
+    display: display
+
+    FloatLayout:
+
+        display: display
+
+        canvas.before:
+            Color:
+                rgba: 0.4, 0.4, 0.9, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # title
+        Label:
+            text: "IDLE"
+            font_size: 24
+            bold: True
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1.41}
+
+        # timer display
+        Label:
+            id: display
+            text: "00:10"
+            font_size: 70
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1}
+
+        # buttons
+        BoxLayout:
+
+            orientation: "horizontal"
+            pos_hint: {"x": 0.3, "y": 0.04}
+            size_hint: 0.4, 0.1
+            spacing: 30
+
+            Button:
+                on_press:
+                    root.close()
+
+                Image:
+                    source: "media/next_iconB.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.quit(completed=True)
+
+                Image:
+                    source: "media/check_iconB.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.quit()
+
+                Image:
+                    source: "media/return_iconB.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+<ExtraFocusTimer>:
+
+    name: "extra_focus_timer"
+    background_color: 0.3, 0.3, 0.9, 1
+
+    FloatLayout:
+
+        # next
+        Button:
+            size_hint: 0.19, 0.22
+            pos_hint: {"x": 0.6, "y": 0.11}
+
+            on_press:
+                root.go()
+
+        Image:
+            source: "media/hulk.png"
+            size: self.parent.size
+            pos: self.parent.x, self.parent.y
+
+
+
+
+# SETTINGS #
+
+<GeneralSettings>:
+
+    name: "general_settings"
+    focus_interval: focus_interval
+    rest_interval: rest_interval
+    save_button: save_button
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.8, 0.8, 0.8, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            text: "General Settings"
+            pos_hint: {"x": 0., "top": 1.4}
+            bold: True
+            font_size: 29
+            color: 0.2, 0.2, 0.2, 1
+
+
+        BoxLayout:
+
+            orientation: 'vertical'
+            pos_hint: {"x": 0.1, "y": 0.2}
+            size_hint: 1, 0.5
+
+            spacing: 20
+
+            GridLayout:
+                cols: 2
+                size_hint: 0.5, 0.7
+
+                Label:
+                    text: "Focus interval"
+                    color: 0.25, 0.25, 0.25, 1
+                    font_size: 17
+
+                TextInput:
+                    id: focus_interval
+                    text: "20"
+                    multiline: False
+
+                    background_color: 1, 1, 1, 0.95
+                    base_direction: "rtl"
+                    padding_y: 50, 25
+                    padding_x: 5, 70
+
+            GridLayout:
+                cols: 2
+                size_hint: 0.5, 0.7
+
+                Label:
+                    text: "Rest interval"
+                    color: 0.25, 0.25, 0.25, 1
+                    font_size: 17
+
+                TextInput:
+                    id: rest_interval
+                    text: "5"
+                    multiline: False
+
+                    background_color: 1, 1, 1, 0.95
+                    base_direction: "rtl"
+                    padding_y: 50, 25
+                    padding_x: 5, 70
+
+        Button:
+            id: save_button
+            text: "save"
+            font_size: 35
+            pos_hint: {"x": 0.73, "y": 0.3}
+            size_hint: 0.2, 0.3
+            background_color: (0.3, 0.3, 0.3, 0.3)
+
+            on_press:
+                root.save()
+
+        Button:
+            pos_hint: {"x": 0.88, "y": 0.03}
+            size_hint: 0.049, 0.06
+
+            on_press:
+                app.root.current = "activity_window"
+                app.root.transition.direction = "right"
+
+            background_down: ''
+            background_normal: ''
+            background_color: 0.7, 0.8, 1, 1
+
+            Image:
+                source: "media/return_icon_.png"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                size: self.parent.size
+
+
+
+
+
+# SCHEDULE JOBS #
+
+<NewJob>:
+
+    name: 'new_job_window'
+
+    job_name: job_name
+    priority: priority
+    title: title
+    submit_button: submit_button
+    check_button: check_button
+    hours: hours
+    min: min
+    duration: duration
+    type_task: type_task
+    type_project: type_project
+    commands: commands
+
+
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.8, 0.8, 0.8, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            id: title
+            text: ""
+            font_size: 24
+            bold: True
+            color: 0.3, 0.2, 0.1, 1
+            pos_hint: {"x": 0, "y": 0.4}
+
+
+        GridLayout:
+            cols: 2
+            rows: 5
+            pos_hint: {"x": 0, "y": 0.25}
+            size_hint: 0.9, 0.5
+
+            #
+            Label:
+                text: "name"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            TextInput:
+                id: job_name
+                multiline: False
+                background_color: 1, 1, 1, 1
+                base_direction: "rtl"
+                padding_x: 10, 130
+                padding_y: 14, 1
+
+            #
+            Label:
+                text: "type"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            GridLayout:
+                cols: 2
+
+                Button:
+                    id: type_task
+                    text: "task"
+                    font_size: 20
+                    on_press:
+                        root.set_job_type(jobtype='task')
+
+                Button:
+                    id: type_project
+                    text: "project"
+                    font_size: 20
+                    on_press:
+                        root.set_job_type(jobtype='project')
+
+            #
+            Label:
+                text: "priority"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            TextInput:
+                id: priority
+                multiline: False
+
+                background_color: 1, 1, 1, 1
+                base_direction: "rtl"
+                padding_x: 10, 135
+                padding_y: 14, 1
+
+            #
+            Label:
+                text: "h deadline"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            GridLayout:
+                cols: 4
+
+                TextInput:
+                    id: hours
+                    multiline: False
+
+                    background_color: 1, 1, 1, 1
+                    base_direction: "rtl"
+                    padding_x: 2, 30
+                    padding_y: 14, 1
+
+                Label:
+                    text: "h"
+                    font_size: 20
+                    color: 0.1, 0.1, 0.1, 1
+
+                TextInput:
+                    id: min
+                    multiline: False
+
+                    background_color: 1, 1, 1, 1
+                    base_direction: "rtl"
+                    padding_x: 2, 30
+                    padding_y: 14, 1
+
+                Label:
+                    text: "m"
+                    font_size: 20
+                    color: 0.1, 0.1, 0.1, 1
+
+            Label:
+                text: "duration"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            GridLayout:
+                cols: 2
+
+                TextInput:
+                    id: duration
+                    multiline: False
+                    background_color: 1, 1, 1, 1
+                    base_direction: "rtl"
+                    padding_x: 5, 65
+                    padding_y: 14, 1
+
+                Label:
+                    text: "m"
+                    font_size: 20
+                    color: 0.1, 0.1, 0.1, 1
+
+        BoxLayout:
+
+            id: commands
+            orientation: "horizontal"
+            pos_hint: {"x": 0.26, "y": 0.01}
+            size_hint: 0.48, 0.1
+            spacing: 30
+
+            Button:
+                on_press:
+                    root.check()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    id: check_button
+                    source: "media/check_icon.png"
+                    size: self.parent.width, self.parent.height
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                id: clear_button
+
+                on_press:
+                    root.clear()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    source: "media/clear_icon.png"
+                    size: self.parent.width, self.parent.height
+                    pos: self.parent.x, self.parent.y
+
+
+            Button:
+                on_press:
+                    root.submit()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    id: submit_button
+                    source: "media/submit_iconT.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            # return
+            Button:
+                on_press:
+                    root.returning()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    source: "media/return5_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+
+# Task #
+
+<TaskObject>:
+
+    rank_pos: rank_pos
+    label: label
+    score: score
+    deadline_clock: deadline_clock
+    status: status
+    task_functions: task_functions
+
+    size_hint: 1, 0.1
+
+    GridLayout:
+        cols: 6
+        size_hint: 1, 1
+        pos_hint: {"x": 0., "top": 1}
+
+        Label:
+            id: rank_pos
+            text: ""
+            color: 0.1, 0.2, 0.1, 1
+
+        Label:
+            id: label
+            text: ""
+            color: 0.1, 0.2, 0.1, 1
+
+        Label:
+            id: score
+            text: ""
+            color: 0.1, 0.2, 0.1, 1
+
+        Label:
+            id: deadline_clock
+            text: ""
+            color: 0.1, 0.2, 0.1, 1
+
+        Label:
+            id: status
+            text: ""
+            color: 0.1, 0.2, 0.1, 1
+
+        BoxLayout:
+            id: task_functions
+            orientation: "horizontal"
+            padding: 16.
+
+            Button:
+                on_press:
+                    app.root.current = "interval_handler"
+                    app.root.transition.direction = "left"
+                    app.root.current_screen.load_data(data=root.provide_focus_data())
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/play2_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.jobs_manager.completed_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/done2_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.jobs_manager.edit_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/edit2_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/del_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+<FinishedTask>:
+
+    rank_pos: rank_pos
+    label: label
+    score: score
+    status: status
+    deadline_clock: deadline_clock
+
+    size_hint: 1, 0.1
+
+    GridLayout:
+        cols: 6
+        size_hint: 1, 1
+        pos_hint: {"x": 0., "top": 1}
+
+        Label:
+            id: rank_pos
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: label
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: score
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: deadline_clock
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: status
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        BoxLayout:
+
+            orientation: "horizontal"
+            padding: 15.9
+
+            Label:
+                text: ""
+            Label:
+                text: ""
+
+            Button:
+                on_press:
+                    app.root.current = "results_window"
+                    app.root.transition.direction = 'left'
+                    app.root.current_screen.show(data=root.data)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/log_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/del_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+# PROJECT #
+
+<ProjectWindow>:
+
+    name: "project_window"
+    projects_manager: projects_manager
+
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.65, 0.8, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        GridLayout:
+            pos_hint: {"x": 0, "top": 1.47}
+            cols: 4
+
+            Label:
+                text: ""
+
+            Label:
+                text: "mini-TASK"
+                color: 0, 0, 0, 1
+                bold: True
+
+            Label:
+                text: "STATUS"
+                color: 0, 0, 0, 1
+                bold: True
+
+            Label:
+                text: "OPTIONS"
+                color: 0, 0, 0, 1
+                bold: True
+
+
+
+        Button:
+            pos_hint: {"x": 0.35, "y": 0.02}
+            size_hint: 0.1, 0.12
+
+            on_press:
+                root.projects_manager.add_minitask()
+
+            background_down: ''
+            background_normal: ''
+            background_color: 0.65, 0.8, 1, 1
+
+            Image:
+                source: "media/add3_icon.png"
+                size: self.parent.size
+                pos: self.parent.x, self.parent.y
+
+        Button:
+            pos_hint: {"x": 0.55, "y": 0.02}
+            size_hint: 0.1, 0.12
+            on_press:
+                app.root.current = "schedule_window"
+                app.root.transition.direction = "right"
+                app.root.current_screen.jobs_manager.update_project(updated_data=root.projects_manager.return_project_data())
+
+            background_down: ''
+            background_normal: ''
+            background_color: 0.65, 0.8, 1, 1
+
+            Image:
+                source: "media/return4_icon.png"
+                size: self.parent.size
+                pos: self.parent.x, self.parent.y
+
+
+        ProjectManager:
+            id: projects_manager
+
+
+
+
+<ProjectObject>:
+
+    rank_pos: rank_pos
+    label: label
+    score: score
+    deadline_clock: deadline_clock
+    status: status
+    project_functions: project_functions
+
+    size_hint: 1, 0.1
+
+    GridLayout:
+        cols: 6
+        size_hint: 1, 1
+        pos_hint: {"x": 0., "top": 1}
+
+        Label:
+            id: rank_pos
+            text: ""
+            color: 0.1, 0.3, 0.7, 1
+
+        Label:
+            id: label
+            text: ""
+            color: 0.1, 0.3, 0.7, 1
+
+        Label:
+            id: score
+            text: ""
+            color: 0.1, 0.3, 0.7, 1
+
+        Label:
+            id: deadline_clock
+            text: ""
+            color: 0.1, 0.3, 0.7, 1
+
+        Label:
+            id: status
+            text: ""
+            color: 0.1, 0.3, 0.7, 1
+
+        BoxLayout:
+            id: project_functions
+            orientation: "horizontal"
+            padding: 16.
+
+            Button:
+                text: "open"
+                font_size: 10
+                on_press:
+                    app.root.current = 'project_window'
+                    app.root.transition.direction = 'left'
+                    app.root.current_screen.projects_manager.load_project(project_data=root.data)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/open2_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                text: "done"
+                font_size: 10
+                on_press:
+                    app.root.current_screen.jobs_manager.completed_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/done2_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                text: "edit"
+                font_size: 10
+                on_press:
+                    app.root.current_screen.jobs_manager.edit_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/edit2_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                text: "del"
+                font_size: 10
+                on_press:
+                    app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/del_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+<FinishedProject>:
+
+    rank_pos: rank_pos
+    label: label
+    score: score
+    status: status
+    deadline_clock: deadline_clock
+
+    size_hint: 1, 0.1
+
+    GridLayout:
+        cols: 6
+        size_hint: 1, 1
+        pos_hint: {"x": 0., "top": 1}
+
+        Label:
+            id: rank_pos
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: label
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: score
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: deadline_clock
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        Label:
+            id: status
+            text: ""
+            color: 0.1, 0.5, 0.1, 0.9
+
+        BoxLayout:
+
+            orientation: "horizontal"
+            padding: 15.8
+
+            Label:
+                text: ""
+
+            Label:
+                text: ""
+
+            Button:
+                text: "open"
+                font_size: 10
+                on_press:
+                    app.root.current = 'project_window'
+                    app.root.transition.direction = 'left'
+                    app.root.current_screen.projects_manager.load_project(project_data=root.data)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/open2_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                text: "del"
+                font_size: 10
+                on_press:
+                    app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.85, 1, 0.9, 1
+
+                Image:
+                    source: "media/del_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+<NewMiniTask>:
+
+    name: 'new_mini_task_window'
+
+    title: title
+    submit_button: submit_button
+    check_button: check_button
+    mini_task_name: mini_task_name
+    rank: rank
+    duration: duration
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.8, 0.8, 0.8, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            id: title
+            text: ""
+            font_size: 24
+            bold: True
+            color: 0.3, 0.2, 0.1, 1
+            pos_hint: {"x": 0, "y": 0.4}
+
+
+        GridLayout:
+            cols: 2
+            pos_hint: {"x": 0.1, "y": 0.6}
+            size_hint: 0.7, 0.06
+            Label:
+                text: "mini task name"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            TextInput:
+                id: mini_task_name
+                multiline: False
+                background_color: 1, 1, 1, 1
+                base_direction: "rtl"
+                padding_x: 1, 80
+
+        GridLayout:
+            cols: 2
+            pos_hint: {"x": 0.1, "y": 0.45}
+            size_hint: 0.7, 0.06
+            Label:
+                text: "rank"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            TextInput:
+                id: rank
+                multiline: False
+                background_color: 1, 1, 1, 1
+                base_direction: "rtl"
+                padding_x: 1, 110
+
+        GridLayout:
+            cols: 2
+            pos_hint: {"x": 0.1, "y": 0.3}
+            size_hint: 0.7, 0.06
+            Label:
+                text: "duration"
+                font_size: 20
+                color: 0.1, 0.1, 0.1, 1
+
+            GridLayout:
+                cols: 2
+
+                TextInput:
+                    id: duration
+                    multiline: False
+                    background_color: 1, 1, 1, 1
+                    base_direction: "rtl"
+                    padding_x: 1, 50
+
+                Label:
+                    text: "m"
+                    font_size: 20
+                    color: 0.1, 0.1, 0.1, 1
+
+
+        BoxLayout:
+            orientation: "horizontal"
+            pos_hint: {"x": 0.26, "y": 0.01}
+            size_hint: 0.48, 0.1
+            spacing: 30
+
+            Button:
+                on_press:
+                    root.check()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    id: check_button
+                    source: "media/check_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.clear()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    source: "media/clear_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.submit()
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    id: submit_button
+                    source: "media/submit_iconT.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+
+                on_press:
+                    root.submit(returning=True)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.8, 0.8, 0.8, 1
+
+                Image:
+                    source: "media/return5_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+<MiniTask>:
+
+    label: label
+    status: status
+    rank_pos: rank_pos
+    mini_task_functions: mini_task_functions
+
+    size_hint: 1, 0.1
+
+    GridLayout:
+        cols: 4
+        size_hint: 1, 1
+        pos_hint: {"x": 0., "top": 1}
+
+        Label:
+            id: rank_pos
+            text: ""
+            color: 0.2, 0.2, 0.8, 1
+
+        Label:
+            id: label
+            text: ""
+            color: 0.2, 0.2, 0.8, 1
+
+        Label:
+            id: status
+            text: ""
+            color: 0.2, 0.2, 0.8, 1
+
+        BoxLayout:
+            id: mini_task_functions
+            orientation: "horizontal"
+
+            padding: 14.7
+            spacing: 15
+
+            Button:
+                on_press:
+                    app.root.current = "interval_handler"
+                    app.root.transition.direction = "left"
+                    app.root.current_screen.load_data(data=root.provide_focus_data())
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.65, 0.8, 1, 1
+
+                Image:
+                    source: "media/start4_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.projects_manager.completed_minitask(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.65, 0.8, 1, 1
+
+                Image:
+                    source: "media/done3_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.projects_manager.edit_minitask(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.65, 0.8, 1, 1
+
+                Image:
+                    source: "media/edit3_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.projects_manager.delete_minitask(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.65, 0.8, 1, 1
+
+                Image:
+                    source: "media/del3_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+<FinishedMiniTask>:
+
+    label: label
+    status: status
+    rank_pos: rank_pos
+
+    size_hint: 1, 0.1
+
+    GridLayout:
+        cols: 4
+        size_hint: 1, 1
+        pos_hint: {"x": 0., "top": 1}
+
+        Label:
+            id: rank_pos
+            text: ""
+            color: 0.1, 0.4, 0.1, 1
+
+        Label:
+            id: label
+            text: ""
+            color: 0.1, 0.4, 0.1, 1
+
+        Label:
+            id: status
+            text: ""
+            color: 0.1, 0.4, 0.1, 1
+
+        BoxLayout:
+
+            orientation: "horizontal"
+            padding: 14.9
+            spacing: 15
+
+            Label:
+                text: ""
+            Label:
+                text: ""
+
+            Button:
+                on_press:
+                    app.root.current = "results_window"
+                    app.root.transition.direction = 'left'
+                    app.root.current_screen.show(data=root.data)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.65, 0.8, 1, 1
+
+                Image:
+                    source: "media/log3_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    app.root.current_screen.projects_manager.delete_minitask(rank=root.rank)
+
+                background_down: ''
+                background_normal: ''
+                background_color: 0.65, 0.8, 1, 1
+
+                Image:
+                    source: "media/del3_icon.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+
+
+
+<Settings>:
+
+    focus_interval: focus_interval
+    rest_interval: rest_interval
+    repetition: repetition
+
+    cols: 2
+    rows: 3
+
+    Label:
+        text: "Focus interval"
+    TextInput:
+        id: focus_interval
+        text: "25"
+        multiline: False
+
+    Label:
+        text: "Rest interval"
+    TextInput:
+        id: rest_interval
+        text: "5"
+        multiline: False
+
+    Label:
+        text: "repetition"
+    TextInput:
+        id: repetition
+        text: "3"
+        multiline: False
+
+
+# SIMPLE TIMER #
+
+<SimpleTimerSetting>:
+
+    name: "simple_timer_setting"
+
+    timer_time: timer_time
+    start_button: start_button
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.8, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        GridLayout:
+            cols: 2
+            size_hint: 0.6, 0.15
+            pos_hint: {"x": 0.26, "y": 0.6}
+
+            TextInput:
+                id: timer_time
+                text: "10"
+                multiline: False
+                font_size: 19
+
+                background_color: 1, 1, 1, 0.3
+                base_direction: "rtl"
+                padding_y: 4, 2
+                padding_x: 2, 5
+
+            Label:
+                text: "min"
+                color: 0.1, 0.3, 0.5, 1
+                font_size: 19
+
+        # start
+        Button:
+            id: start_button
+            text: "start"
+            font_size: 21
+            pos_hint: {"x": 0.3, "y": 0.25}
+            size_hint: 0.4, 0.2
+            background_color: (0.2, 0.2, 0.7, 0.3)
+            color: 0.1, 0.1, 0.1, 1
+
+            on_press:
+                root.check_inputs()
+                if root.saved: app.root.current = "simple_timer"
+                if root.saved: app.root.transition.direction = "left"
+                if root.saved: app.root.current_screen.load_duration(duration=root.get_duration())
+
+        # quit
+        Button:
+            pos_hint: {"x": 0.88, "y": 0.03}
+            size_hint: 0.049, 0.06
+
+            on_press:
+                root.quit()
+                app.root.current = "activity_window"
+                app.root.transition.direction = "right"
+
+            background_down: ''
+            background_normal: ''
+            background_color: 0.7, 0.8, 1, 1
+
+            Image:
+                source: "media/return_icon_.png"
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                size: self.parent.size
+
+
+<SimpleTimer>:
+
+    name: "simple_timer"
+
+    display: display
+    play_pause: play_pause
+    play_pause_icon: play_pause_icon
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.4, 0.9, 0.4, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # timer display
+        Label:
+            id: display
+            text: "00:10"
+            font_size: 70
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1}
+
+        # buttons
+        BoxLayout:
+
+            orientation: "horizontal"
+            pos_hint: {"x": 0.225, "y": 0.04}
+            size_hint: 0.55, 0.1
+            spacing: 30
+
+            Button:
+                id: play_pause
+                on_press:
+                    root.update()
+
+                Image:
+                    id: play_pause_icon
+                    source: "media/play_iconG.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_press:
+                    root.reset()
+
+                Image:
+                    source: "media/repeat_iconG.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+            Button:
+                on_release:
+                    root.quit()
+
+                Image:
+                    source: "media/return_iconG.png"
+                    size: self.parent.size
+                    pos: self.parent.x, self.parent.y
+
+<ExtraSimpleTimer>:
+
+    name: "extra_simple_timer"
+    background_color: 0.3, 0.3, 0.9, 1
+
+    FloatLayout:
+
+        Image:
+            source: "media/overtime.gif"
+            size: self.parent.size
+            pos: self.parent.x, self.parent.y
+
+        #  next   # <--- show button on the window
+        Button:
+            size_hint: 0.15, 0.17
+            pos_hint: {"x": 0.85, "y": 0.01}
+            color: 0.1, 0.1, 0.1, 0.1
+
+            on_press:
+                root.close()
+

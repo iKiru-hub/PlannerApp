@@ -193,8 +193,6 @@ class NewJob(Screen):
         # reset
         self.reset()
 
-
-
     def reset(self):
 
         self.data = {'name': self.job_name.text,
@@ -2453,9 +2451,18 @@ class SimpleTimerSetting(Screen):
 
         return self.duration
 
+    def change_image(self, pressed=False):
+
+        if pressed:
+            self.timer_setting_image.source = r"media/Timer window/timer_settings_return.png"
+
+        else:
+            self.timer_setting_image.source = r"media/Timer window/timer_settings.png"
+
     def quit(self):
 
         Window.size = (700, 500)
+        self.timer_setting_image.source = r"media/Timer window/timer_settings.png"
 
 
 class SimpleTimer(Screen):
@@ -2465,7 +2472,7 @@ class SimpleTimer(Screen):
 
         self.tot_duration = 0
         self.duration = 0  # how long it has run so far
-        self.state = "paused"  # state: finished, running, paused
+        self.state = "running"  # state: finished, running, paused
         self.start_time = 0.  # time at which it started
         self.checkpoint = 0.  # paused time
 
@@ -2509,7 +2516,7 @@ class SimpleTimer(Screen):
             self.state = "running"
 
             # change button name to pause
-            self.play_pause_icon.source = "media/pause_iconG.png"
+            #self.play_pause_icon.source = "media/pause_iconG.png"
 
         else:
             print('\nfocus waiting to start')
@@ -2518,9 +2525,9 @@ class SimpleTimer(Screen):
             self.state = "paused"
 
             # change button name to pause
-            self.play_pause_icon.source = "media/play_iconG.png"
+            # self.play_pause_icon.source = "media/play_iconG.png"
 
-        print('\n% timer interval loaded: ', self.current_time, f' [{duration*60}s] %')
+        print('\n% timer interval loaded: ', self.current_time, f' [{duration*60}s] % ', self.state)
 
     def update(self):
 
@@ -2537,7 +2544,7 @@ class SimpleTimer(Screen):
             self.state = "running"
 
             # change button name to pause
-            self.play_pause_icon.source = "media/pause_iconG.png"
+            # self.play_pause_icon.source = "media/pause_iconG.png"
 
         # running + pause button : pause
         elif self.state == 'running':
@@ -2554,7 +2561,7 @@ class SimpleTimer(Screen):
             self.checkpoint = self.current_time[0]*60 + self.current_time[1]
 
             # change button name to play
-            self.play_pause_icon.source = "media/play_iconG.png"
+            #self.play_pause_icon.source = "media/play_iconG.png"
 
             # track interval run
             self.tracking()
@@ -2621,24 +2628,25 @@ class SimpleTimer(Screen):
 
         """ reset to the original values"""
 
-        print('\nfocus #reset')
+        print('\nfocus #reset ', self.state)
 
         # cancel
         self.job.cancel()
 
         Clock.usleep(1000)
 
-        # record
-        self.tracking()
-
         # reset values to original
         self.checkpoint = self.tot_duration
         self.current_time = [int(self.tot_duration // 60), int(self.tot_duration % 60)]
         self.display.text = f"{self.current_time[0]:02d}:{self.current_time[1]:02d}"
 
-        # restart
-        self.start_time = time.time()
-        self.job = Clock.schedule_interval(self.ticking, 0.5)
+        # record
+        if self.state == 'running':
+            self.tracking()
+
+            # restart
+            self.start_time = time.time()
+            self.job = Clock.schedule_interval(self.ticking, 0.5)
 
 
     def quit(self):
@@ -2661,6 +2669,49 @@ class SimpleTimer(Screen):
         self.app.root.transition.direction = 'right'
 
         self.total_reset()
+
+    def change_image(self, flag="", pressed=False):
+
+        print('state ', self.state, ' pressed: ', pressed)
+
+        # running -> stopped
+        if flag == "" and self.state == 'running' and not pressed:
+            self.timer_image.source = r'media/Timer window/timer_nogo.png'
+
+        # pressed running -> stopped
+        elif flag == "" and self.state == 'running' and pressed:
+            self.timer_image.source = r'media/Timer window/timer_go_stop.png'
+
+        # stopped -> running
+        elif flag == "" and self.state == 'paused' and not pressed:
+            self.timer_image.source = r'media/Timer window/timer_go.png'
+
+        # pressed stopped -> running
+        elif flag == "" and self.state == 'paused' and pressed:
+            self.timer_image.source = r'media/Timer window/timer_nogo_play.png'
+
+        # pressed running reset
+        elif flag == 'reset' and self.state == 'running':
+            self.timer_image.source = r'media/Timer window/timer_go_reset.png'
+
+        # pressed running return
+        elif flag == 'return' and self.state == 'running':
+            self.timer_image.source = r'media/Timer window/timer_go_return.png'
+
+        # pressed stopped reset
+        elif flag == 'reset' and self.state == 'paused':
+            self.timer_image.source = r'media/Timer window/timer_nogo_reset.png'
+
+        # pressed stopped return
+        elif flag == 'return' and self.state == 'paused':
+            self.timer_image.source = r'media/Timer window/timer_nogo_return.png'
+
+        # void
+        elif flag == 'void' and self.state == 'running':
+            self.timer_image.source = r'media/Timer window/timer_go.png'
+
+        elif flag == 'void' and self.state == 'paused':
+            self.timer_image.source = r'media/Timer window/timer_nogo.png'
 
 
     def total_reset(self):
@@ -2749,7 +2800,7 @@ class ActivityWindow(Screen):
 
     def button_released(self, name=""):
 
-        self.main_image.source = "media/main_screen/main_screen_zero.png"
+        self.main_image.source = r"media/Activity window/activity_window.png"
 
 
 

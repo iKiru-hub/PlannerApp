@@ -124,6 +124,8 @@ WindowManager:
         Image:
             id: main_image
             source: f'media/Activity window/activity_window.png'
+            allow_stretch: True
+            keep_ratio: True
 
 
 <ScheduleWindow>:
@@ -1832,6 +1834,8 @@ WindowManager:
         Image:
             id: timer_setting_image
             source: r"media/Timer window/timer_settings.png"
+            allow_stretch: True
+            keep_ratio: True
 
         GridLayout:
             cols: 2
@@ -1914,6 +1918,8 @@ WindowManager:
         Image:
             id: timer_image
             source: f"media/Timer window/timer_go.png"
+            allow_stretch: True
+            keep_ratio: True
 
         # timer display
         Label:

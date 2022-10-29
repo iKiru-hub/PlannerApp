@@ -1,3 +1,5 @@
+import warnings
+
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -1569,7 +1571,7 @@ class IntervalHandler(Screen):
         self.app = App.get_running_app()
         print(f'\n% intervals loaded: {self.intervals} %')
 
-        Window.size = (400, 300)
+        Window.size = (250, 200)
 
         self.step()
 
@@ -1639,6 +1641,7 @@ class IntervalHandler(Screen):
                         'done': False,
                         'next_window': 'activity_window'}
         self.data = {}
+
 
 
 class NewSessionWindow(Screen):
@@ -1789,8 +1792,6 @@ class FocusTimer(Screen):
             # new state
             self.state = "running"
 
-            # change button name to pause
-            self.play_pause_icon.source = "media/pause_iconG.png"
 
         else:
             print('\nfocus waiting to start')
@@ -1798,8 +1799,6 @@ class FocusTimer(Screen):
             # new state
             self.state = "paused"
 
-            # change button name to pause
-            self.play_pause_icon.source = "media/play_iconG.png"
 
         print('\n% focus interval loaded: ', self.current_time, f' [{self.interval}s] %')
 
@@ -1818,7 +1817,7 @@ class FocusTimer(Screen):
             self.state = "running"
 
             # change button name to pause
-            self.play_pause_icon.source = "media/pause_iconG.png"
+            self.focus_timer_image.source = r'media/Focus session/focus_go.png'
 
         # running + pause button : pause
         elif self.state == 'running':
@@ -1833,9 +1832,6 @@ class FocusTimer(Screen):
 
             # checkpoint
             self.checkpoint = self.current_time[0]*60 + self.current_time[1]
-
-            # change button name to play
-            self.play_pause_icon.source = "media/play_iconG.png"
 
             # track interval run
             self.tracking()
@@ -1864,6 +1860,43 @@ class FocusTimer(Screen):
             return
 
         self.display.text = f"{self.current_time[0]:02d}:{self.current_time[1]:02d}"
+
+    def change_image(self, flag=" ", pressed=False):
+
+        if pressed:
+
+            # stop
+            if flag == " " and self.state == "running":
+                self.focus_timer_image.source = r'media/Focus session/focus_go_stop.png'
+
+            elif flag == "next" and self.state == "running":
+                self.focus_timer_image.source = r'media/Focus session/focus_go_next.png'
+
+            elif flag == "reset" and self.state == 'running':
+                self.focus_timer_image.source = r'media/Focus session/focus_go_reset.png'
+
+            elif flag == "return" and self.state == 'running':
+                self.focus_timer_image.source = r'media/Focus session/focus_go_return.png'
+
+            # play
+            elif flag == " " and self.state == "paused":
+                self.focus_timer_image.source = r'media/Focus session/focus_nogo_play.png'
+
+            elif flag == "next" and self.state == "paused":
+                self.focus_timer_image.source = r'media/Focus session/focus_nogo_next.png'
+
+            elif flag == "reset" and self.state == 'paused':
+                self.focus_timer_image.source = r'media/Focus session/focus_nogo_reset.png'
+
+            elif flag == "return" and self.state == 'paused':
+                self.focus_timer_image.source = r'media/Focus session/focus_nogo_return.png'
+
+        else:
+            if self.state == "running":
+                self.focus_timer_image.source = r'media/Focus session/focus_go.png'
+
+            elif self.state == "paused":
+                self.focus_timer_image.source = r'media/Focus session/focus_nogo.png'
 
 
     def tracking(self):
@@ -1910,7 +1943,11 @@ class FocusTimer(Screen):
         print('\nfocus #reset')
 
         # cancel
-        self.job.cancel()
+        try:
+            self.job.cancel()
+        except AttributeError:
+            warnings.warn("timer already reset")
+            return
 
         Clock.usleep(1000)
 
@@ -2033,6 +2070,23 @@ class RestTimer(Screen):
 
         self.display.text = f"{self.current_time[0]:02d}:{self.current_time[1]:02d}"
 
+    def change_image(self, flag=" ", pressed=False):
+
+        if pressed:
+
+            if flag == "next":
+                self.rest_timer_image.source = r'media/Focus session/rest_next.png'
+
+            elif flag == "reset":
+                self.rest_timer_image.source = r'media/Focus session/rest_reset.png'
+
+            elif flag == "return":
+                self.rest_timer_image.source = r'media/Focus session/rest_return.png'
+
+        else:
+            self.rest_timer_image.source = r'media/Focus session/rest.png'
+
+
     def tracking(self):
 
         self.duration = int(time.time() - self.start_time)
@@ -2078,7 +2132,6 @@ class RestTimer(Screen):
 
         self.total_reset()
 
-
     def quit(self):
 
         print('\nrest #quit')
@@ -2099,7 +2152,6 @@ class RestTimer(Screen):
         self.app.root.current_screen.close()
 
         self.total_reset()
-
 
     def total_reset(self):
 
@@ -2144,6 +2196,22 @@ class IdleTimer(Screen):
         self.display.text = "00:00"
 
         self.app = App.get_running_app()
+
+    def change_image(self, flag=" ", pressed=False):
+
+        if pressed:
+
+            if flag == "next":
+                self.idle_timer_image.source = r'media/Focus session/idle_next.png'
+
+            elif flag == "done":
+                self.idle_timer_image.source = r'media/Focus session/idle_done.png'
+
+            elif flag == "return":
+                self.idle_timer_image.source = r'media/Focus session/idle_return.png'
+
+        else:
+            self.idle_timer_image.source = r'media/Focus session/idle.png'
 
 
     def ticking(self, *args):

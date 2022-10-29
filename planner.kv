@@ -255,6 +255,7 @@ WindowManager:
     rest_interval: rest_interval
     repetition: repetition
     start_button: start_button
+    focus_settings_image: focus_settings_image
 
     FloatLayout:
 
@@ -264,6 +265,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: focus_settings_image
+            source: r'media/Focus settings/focus_settings.png'
+            allow_stretch: True
+            keep_ratio: True
 
         Label:
             text: "Session Settings"
@@ -353,23 +360,22 @@ WindowManager:
                 if root.saved: app.root.transition.direction = "left"
                 if root.saved: app.root.current_screen.load_data(data=root.settings)
 
+        # return
         Button:
-            pos_hint: {"x": 0.88, "y": 0.03}
-            size_hint: 0.049, 0.06
+            pos_hint: {"x": 0.91, "y": 0.04}
+            size_hint: 0.06, 0.08
 
             on_press:
+                root.focus_settings_image.source = r'media/Focus settings/focus_settings_return.png'
+
+            on_release:
+                root.focus_settings_image.source = r'media/Focus settings/focus_settings.png'
                 app.root.current = "activity_window"
                 app.root.transition.direction = "right"
 
             background_down: ''
             background_normal: ''
-            background_color: 0.7, 0.8, 1, 1
-
-            Image:
-                source: "media/return_icon_.png"
-                center_x: self.parent.center_x
-                center_y: self.parent.center_y
-                size: self.parent.size
+            background_color: 0, 0, 0, 0
 
 
 <IntervalHandler>:
@@ -452,8 +458,7 @@ WindowManager:
     background_color: 0.2, 0.9, 0.2, 1
 
     display: display
-    play_pause: play_pause
-    play_pause_icon: play_pause_icon
+    focus_timer_image: focus_timer_image
 
     FloatLayout:
 
@@ -463,6 +468,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: focus_timer_image
+            source: r'media/Focus session/focus_go.png'
+            allow_stretch: True
+            keep_ratio: True
 
         # title
         Label:
@@ -484,47 +495,46 @@ WindowManager:
         BoxLayout:
 
             orientation: "horizontal"
-            pos_hint: {"x": 0.225, "y": 0.04}
-            size_hint: 0.55, 0.1
-            spacing: 30
+            pos_hint: {"x": 0.1, "y": 0.12}
+            size_hint: 0.85, 0.16
+            spacing: 20
 
             Button:
-                id: play_pause
+                background_color: 0, 0, 0, 0
                 on_press:
+                    root.change_image(pressed=True)
+
+                on_release:
                     root.update()
-
-                Image:
-                    id: play_pause_icon
-                    source: "media/play_iconG.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                    root.change_image()
 
             Button:
+                background_color: 0, 0, 0, 0
                 on_press:
+                    root.change_image(flag="reset", pressed=True)
+
+                on_release:
+                    root.change_image()
                     root.reset()
 
-                Image:
-                    source: "media/repeat_iconG.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
-
             Button:
+                background_color: 0, 0, 0, 0
                 on_press:
+                    root.change_image(flag="next", pressed=True)
+
+                on_release:
+                    root.change_image()
                     root.close()
 
-                Image:
-                    source: "media/next_iconG.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
-
             Button:
+                background_color: 0, 0, 0, 0
                 on_press:
+                    root.change_image(flag="return", pressed=True)
+
+                on_release:
+                    root.change_image()
                     root.quit()
 
-                Image:
-                    source: "media/return_iconG.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
 
 
 <RestTimer>:
@@ -533,6 +543,7 @@ WindowManager:
     background_color: 0.9, 0.2, 0.2, 1
 
     display: display
+    rest_timer_image: rest_timer_image
 
     FloatLayout:
 
@@ -544,6 +555,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: rest_timer_image
+            source: r'media/Focus session/rest.png'
+            allow_stretch: True
+            keep_ratio: True
 
         # title
         Label:
@@ -565,36 +582,36 @@ WindowManager:
         BoxLayout:
 
             orientation: "horizontal"
-            pos_hint: {"x": 0.3, "y": 0.04}
-            size_hint: 0.4, 0.1
+            pos_hint: {"x": 0.15, "y": 0.12}
+            size_hint: 0.7, 0.16
             spacing: 30
 
             Button:
+                background_color: 0, 0, 0, 0
                 on_press:
-                    root.close()
+                    root.change_image(flag="reset", pressed=True)
 
-                Image:
-                    source: "media/next_iconR.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
-
-            Button:
-                on_press:
+                on_release:
+                    root.change_image()
                     root.reset()
 
-                Image:
-                    source: "media/repeat_iconR.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+            Button:
+                background_color: 0, 0, 0, 0
+                on_press:
+                    root.change_image(flag="next", pressed=True)
+
+                on_release:
+                    root.change_image()
+                    root.close()
 
             Button:
+                background_color: 0, 0, 0, 0
                 on_press:
-                    root.quit()
+                    root.change_image(flag="return", pressed=True)
 
-                Image:
-                    source: "media/return_iconR.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                on_release:
+                    root.change_image()
+                    root.quit()
 
 
 <IdleTimer>:
@@ -603,6 +620,7 @@ WindowManager:
     background_color: 0.3, 0.3, 0.9, 1
 
     display: display
+    idle_timer_image: idle_timer_image
 
     FloatLayout:
 
@@ -614,6 +632,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: idle_timer_image
+            source: r'media/Focus session/idle.png'
+            allow_stretch: True
+            keep_ratio: True
 
         # title
         Label:
@@ -635,36 +659,36 @@ WindowManager:
         BoxLayout:
 
             orientation: "horizontal"
-            pos_hint: {"x": 0.3, "y": 0.04}
-            size_hint: 0.4, 0.1
+            pos_hint: {"x": 0.15, "y": 0.12}
+            size_hint: 0.7, 0.16
             spacing: 30
 
             Button:
+                background_color: 0, 0, 0, 0
                 on_press:
-                    root.close()
+                    root.change_image(flag="done", pressed=True)
 
-                Image:
-                    source: "media/next_iconB.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
-
-            Button:
-                on_press:
+                on_release:
+                    root.change_image()
                     root.quit(completed=True)
 
-                Image:
-                    source: "media/check_iconB.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+            Button:
+                background_color: 0, 0, 0, 0
+                on_press:
+                    root.change_image(flag="next", pressed=True)
+
+                on_release:
+                    root.change_image()
+                    root.close()
 
             Button:
+                background_color: 0, 0, 0, 0
                 on_press:
-                    root.quit()
+                    root.change_image(flag="return", pressed=True)
 
-                Image:
-                    source: "media/return_iconB.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                on_release:
+                    root.change_image()
+                    root.quit()
 
 
 <ExtraFocusTimer>:
@@ -672,124 +696,27 @@ WindowManager:
     name: "extra_focus_timer"
     background_color: 0.3, 0.3, 0.9, 1
 
+    hulk_image: hulk_image
+
     FloatLayout:
+        Image:
+            id: hulk_image
+            source: r"media/meme_gif/hulk.png"
+            allow_stretch: True
 
         # next
         Button:
-            size_hint: 0.19, 0.22
-            pos_hint: {"x": 0.6, "y": 0.11}
+            size_hint: 0.22, 0.25
+            pos_hint: {"x": 0.66, "y": 0.08}
+
+            background_color: 0, 0, 0, 0
 
             on_press:
+                hulk_image.source=r"media/meme_gif/hulk_return.png"
+
+            on_release:
+                hulk_image.source=r"media/meme_gif/hulk.png"
                 root.go()
-
-        Image:
-            source: "media/hulk.png"
-            size: self.parent.size
-            pos: self.parent.x, self.parent.y
-
-
-
-
-# SETTINGS #
-
-<GeneralSettings>:
-
-    name: "general_settings"
-    focus_interval: focus_interval
-    rest_interval: rest_interval
-    save_button: save_button
-
-    FloatLayout:
-
-        canvas.before:
-            Color:
-                rgba: 0.8, 0.8, 0.8, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-
-        Label:
-            text: "General Settings"
-            pos_hint: {"x": 0., "top": 1.4}
-            bold: True
-            font_size: 29
-            color: 0.2, 0.2, 0.2, 1
-
-
-        BoxLayout:
-
-            orientation: 'vertical'
-            pos_hint: {"x": 0.1, "y": 0.2}
-            size_hint: 1, 0.5
-
-            spacing: 20
-
-            GridLayout:
-                cols: 2
-                size_hint: 0.5, 0.7
-
-                Label:
-                    text: "Focus interval"
-                    color: 0.25, 0.25, 0.25, 1
-                    font_size: 17
-
-                TextInput:
-                    id: focus_interval
-                    text: "20"
-                    multiline: False
-
-                    background_color: 1, 1, 1, 0.95
-                    base_direction: "rtl"
-                    padding_y: 50, 25
-                    padding_x: 5, 70
-
-            GridLayout:
-                cols: 2
-                size_hint: 0.5, 0.7
-
-                Label:
-                    text: "Rest interval"
-                    color: 0.25, 0.25, 0.25, 1
-                    font_size: 17
-
-                TextInput:
-                    id: rest_interval
-                    text: "5"
-                    multiline: False
-
-                    background_color: 1, 1, 1, 0.95
-                    base_direction: "rtl"
-                    padding_y: 50, 25
-                    padding_x: 5, 70
-
-        Button:
-            id: save_button
-            text: "save"
-            font_size: 35
-            pos_hint: {"x": 0.73, "y": 0.3}
-            size_hint: 0.2, 0.3
-            background_color: (0.3, 0.3, 0.3, 0.3)
-
-            on_press:
-                root.save()
-
-        Button:
-            pos_hint: {"x": 0.88, "y": 0.03}
-            size_hint: 0.049, 0.06
-
-            on_press:
-                app.root.current = "activity_window"
-                app.root.transition.direction = "right"
-
-            background_down: ''
-            background_normal: ''
-            background_color: 0.7, 0.8, 1, 1
-
-            Image:
-                source: "media/return_icon_.png"
-                center_x: self.parent.center_x
-                center_y: self.parent.center_y
-                size: self.parent.size
 
 
 
@@ -1779,6 +1706,111 @@ WindowManager:
                     pos: self.parent.x, self.parent.y
 
 
+# SETTINGS #
+
+<GeneralSettings>:
+
+    name: "general_settings"
+    focus_interval: focus_interval
+    rest_interval: rest_interval
+    save_button: save_button
+    general_setting_image: general_setting_image
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.8, 0.8, 0.8, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            id: general_setting_image
+            source: r"media/General settings/general_settings.png"
+            allow_stretch: True
+            keep_ratio: True
+
+        Label:
+            text: "General Settings"
+            pos_hint: {"x": 0., "top": 1.4}
+            bold: True
+            font_size: 29
+            color: 0.2, 0.2, 0.2, 1
+
+
+        BoxLayout:
+
+            orientation: 'vertical'
+            pos_hint: {"x": 0.1, "y": 0.2}
+            size_hint: 1, 0.5
+
+            spacing: 20
+
+            GridLayout:
+                cols: 2
+                size_hint: 0.5, 0.7
+
+                Label:
+                    text: "Focus interval"
+                    color: 0.25, 0.25, 0.25, 1
+                    font_size: 17
+
+                TextInput:
+                    id: focus_interval
+                    text: "20"
+                    multiline: False
+
+                    background_color: 1, 1, 1, 0.95
+                    base_direction: "rtl"
+                    padding_y: 50, 25
+                    padding_x: 5, 70
+
+            GridLayout:
+                cols: 2
+                size_hint: 0.5, 0.7
+
+                Label:
+                    text: "Rest interval"
+                    color: 0.25, 0.25, 0.25, 1
+                    font_size: 17
+
+                TextInput:
+                    id: rest_interval
+                    text: "5"
+                    multiline: False
+
+                    background_color: 1, 1, 1, 0.95
+                    base_direction: "rtl"
+                    padding_y: 50, 25
+                    padding_x: 5, 70
+
+        Button:
+            id: save_button
+            text: "save"
+            font_size: 35
+            pos_hint: {"x": 0.73, "y": 0.3}
+            size_hint: 0.2, 0.3
+            background_color: (0.3, 0.3, 0.3, 0.3)
+
+            on_press:
+                root.save()
+
+        # return
+        Button:
+            pos_hint: {"x": 0.91, "y": 0.04}
+            size_hint: 0.06, 0.08
+
+            on_press:
+                root.general_setting_image.source = r"media/General settings/general_settings_return.png"
+
+            on_release:
+                root.general_setting_image.source = r"media/General settings/general_settings.png"
+                app.root.current = "activity_window"
+                app.root.transition.direction = "right"
+
+            background_color: 0, 0, 0, 0
+
 
 
 <Settings>:
@@ -1791,10 +1823,10 @@ WindowManager:
     rows: 3
 
     Label:
-        text: "Focus interval"
+        text: "Focus interval 1"
     TextInput:
         id: focus_interval
-        text: "25"
+        text: "35"
         multiline: False
 
     Label:

@@ -6,6 +6,8 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window
 from kivy.clock import Clock
 
+from kivy.lang import Builder
+
 from numpy import array
 import time
 
@@ -127,18 +129,10 @@ class NewJob(Screen):
         # grant validity
         if triple_check == (2 + 1*(self.data['type'] == 'task')):
 
-            # enable
-            self.check_button.source = "media/checked_icon.png"
-            self.submit_button.source = "media/submit_icon.png"
-
             self.data['validity'] = True
             print('granted!')
 
         else:
-
-            # disable
-            self.check_button.source = "media/check_icon.png"
-            self.submit_button.source = "media/submit_iconT.png"
 
             self.data['validity'] = False
 
@@ -163,8 +157,6 @@ class NewJob(Screen):
                      'validity': False}
 
         # buttons
-        self.check_button.source = "media/check_icon.png"
-        self.submit_button.source = "media/submit_iconT.png"
         self.type_task.color = (0.3, 0.8, 0.3, 1)
         self.type_project.color = (1, 1, 1, 1)
 
@@ -213,10 +205,10 @@ class NewJob(Screen):
         self.duration.text = ''
 
         # buttons
-        self.check_button.source = "media/check_icon.png"
-        self.submit_button.source = "media/submit_iconT.png"
         self.type_task.color = (0.3, 0.8, 0.3, 1)
         self.type_project.color = (1, 1, 1, 1)
+
+        self.newjob_window_image.source = r'media/NewJob window/newjob_window.png'
 
 
     def set_job_type(self, jobtype='task'):
@@ -248,6 +240,27 @@ class NewJob(Screen):
 
             self.data['current_minitasks'] = []
             self.data['completed_minitasks'] = 0
+
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.newjob_window_image.source = r'media/NewJob window/newjob_window.png'
+
+        elif flag == "check":
+            self.newjob_window_image.source = r'media/NewJob window/newjob_window_check.png'
+
+        elif flag == "clear":
+            self.newjob_window_image.source = r'media/NewJob window/newjob_window_clear.png'
+
+        elif flag == "submit":
+            self.newjob_window_image.source = r'media/NewJob window/newjob_window_submit.png'
+
+        elif flag == "return":
+            self.newjob_window_image.source = r'media/NewJob window/newjob_window_return.png'
+
+        else:
+            warnings.warn(f"flag {flag} does not correspond to any newjob_window key")
+
 
 
 class JobsManager(FloatLayout):
@@ -696,6 +709,10 @@ class TaskObject(FloatLayout):
         self.value = value
         self.score.text = str(self.value)
 
+    def get_icons_position(self):
+
+        return {"x": 0.85, "top": self.pos_hint["top"]}
+
 
     def update_priority(self, priority: int):
 
@@ -755,6 +772,23 @@ class TaskObject(FloatLayout):
     def edit_task(self):
 
         print(f'\nediting "{self.name}" task')
+
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.job_icons_image.source = r"media/Job obj/job_icons.png"
+
+        elif flag == "play":
+            self.job_icons_image.source = r"media/Job obj/job_icons_play.png"
+
+        elif flag == "delete":
+            self.job_icons_image.source = r"media/Job obj/job_icons_delete.png"
+
+        elif flag == "done":
+            self.job_icons_image.source = r"media/Job obj/job_icons_done.png"
+
+        elif flag == "edit":
+            self.job_icons_image.source = r"media/Job obj/job_icons_edit.png"
 
 
 class FinishedTask(FloatLayout):
@@ -821,6 +855,18 @@ class FinishedTask(FloatLayout):
         self.label.text = self.name
 
         print(f'\n<finished task> "{self.name}" setting a record')
+
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.job_icons_image.source = r"media/Finished obj/finished_task.png"
+
+        elif flag == "results":
+            self.job_icons_image.source = r"media/Finished obj/finished_task_results.png"
+
+        elif flag == "delete":
+            self.job_icons_image.source = r"media/Finished obj/finished_task_delete.png"
+
 
 
 
@@ -950,7 +996,6 @@ class ProjectManager(FloatLayout):
         print('+new minitask added!')
         self.updated = True
         self.refresh(sort=False)
-
 
     def edit_minitask(self, rank: int):
 
@@ -1182,6 +1227,23 @@ class ProjectObject(FloatLayout):
         self.rank = rank
         self.data['rank'] = rank
 
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.job_icons_image.source = r"media/Job obj/job_icons_prj.png"
+
+        elif flag == "open":
+            self.job_icons_image.source = r"media/Job obj/job_icons_prj_open.png"
+
+        elif flag == "delete":
+            self.job_icons_image.source = r"media/Job obj/job_icons_prj_delete.png"
+
+        elif flag == "done":
+            self.job_icons_image.source = r"media/Job obj/job_icons_prj_done.png"
+
+        elif flag == "edit":
+            self.job_icons_image.source = r"media/Job obj/job_icons_prj_edit.png"
+
 
 class FinishedProject(FloatLayout):
     """
@@ -1248,6 +1310,19 @@ class FinishedProject(FloatLayout):
         self.label.text = self.name
 
         print(f'\n<finished project> "{self.name}" job setting a record with data ', self.data)
+
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.job_icons_image.source = r"media/Finished obj/finished_prj.png"
+
+        elif flag == "results":
+            self.job_icons_image.source = r"media/Finished obj/finished_prj_open.png"
+
+        elif flag == "delete":
+            self.job_icons_image.source = r"media/Finished obj/finished_prj_delete.png"
+
+
 
 
 class MiniTask(FloatLayout):
@@ -1329,6 +1404,22 @@ class MiniTask(FloatLayout):
 
         return self.data
 
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.minitask_icons_image.source = r"media/Mini task obj/minitask_icons.png"
+
+        elif flag == "play":
+            self.minitask_icons_image.source = r"media/Mini task obj/minitask_icons_play.png"
+
+        elif flag == "delete":
+            self.minitask_icons_image.source = r"media/Mini task obj/minitask_icons_delete.png"
+
+        elif flag == "done":
+            self.minitask_icons_image.source = r"media/Mini task obj/minitask_icons_done.png"
+
+        elif flag == "edit":
+            self.minitask_icons_image.source = r"media/Mini task obj/minitask_icons_edit.png"
 
 
 class NewMiniTask(Screen):
@@ -1406,15 +1497,11 @@ class NewMiniTask(Screen):
         if double_check == 2:
 
             # enable
-            self.check_button.source = "media/checked_icon.png"
-            self.submit_button.source = "media/submit_icon.png"
             self.data['validity'] = True
 
         else:
 
             # disable
-            self.check_button.source = "media/check_icon.png"
-            self.submit_button.source = "media/submit_iconT.png"
             self.data['validity'] = False
 
 
@@ -1434,10 +1521,6 @@ class NewMiniTask(Screen):
         self.rank.text = ''
         self.duration.text = ''
 
-        # buttons
-        self.check_button.source = "media/check_icon.png"
-        self.submit_button.source = "media/submit_iconT.png"
-
 
     def submit(self, returning=False):
 
@@ -1456,6 +1539,28 @@ class NewMiniTask(Screen):
             self.reset()
             return
 
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.newminitask_window_image.source = r'media/NewJob window/newjob_window.png'
+
+        elif flag == "check":
+            self.newminitask_window_image.source = r'media/NewJob window/newjob_window_check.png'
+
+        elif flag == "clear":
+            self.newminitask_window_image.source = r'media/NewJob window/newjob_window_clear.png'
+
+        elif flag == "submit":
+            self.newminitask_window_image.source = r'media/NewJob window/newjob_window_submit.png'
+
+        elif flag == "return":
+            self.newminitask_window_image.source = r'media/NewJob window/newjob_window_return.png'
+
+        else:
+            warnings.warn(f"flag {flag} does not correspond to any newjob_window key")
+
+
+
 
     def reset(self):
 
@@ -1467,8 +1572,7 @@ class NewMiniTask(Screen):
         self.duration.text = ''
 
         # buttons
-        self.check_button.source = "media/check_icon.png"
-        self.submit_button.source = "media/submit_iconT.png"
+        self.newminitask_window_image.source = r'media/NewJob window/newjob_window.png'
 
 
 class FinishedMiniTask(FloatLayout):
@@ -1521,6 +1625,19 @@ class FinishedMiniTask(FloatLayout):
         self.label.text = self.name
 
         print(f'\n<finished minitask> "{self.name}" setting a record')
+
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.job_icons_image.source = r"media/Finished obj/finished_minitask.png"
+
+        elif flag == "results":
+            self.job_icons_image.source = r"media/Finished obj/finished_minitask_results.png"
+
+        elif flag == "delete":
+            self.job_icons_image.source = r"media/Finished obj/finished_minitask_delete.png"
+
+
 
 
 """ SESSION """
@@ -1641,7 +1758,6 @@ class IntervalHandler(Screen):
                         'done': False,
                         'next_window': 'activity_window'}
         self.data = {}
-
 
 
 class NewSessionWindow(Screen):
@@ -2325,75 +2441,6 @@ class ExtraFocusTimer(Screen):
         self.results = results
 
 
-class GeneralSettings(Screen):
-
-    def __init__(self, **kwargs):
-        super(GeneralSettings, self).__init__(**kwargs)
-
-        self.focused_time = FOCUSED_TIME
-        self.rest_time = REST_TIME
-
-        self.saved = False
-
-    def on_enter(self, *args):
-
-        print('\n--------------------- New Session Settings ---------------------')
-
-        # self.app = App.get_running_app()
-
-        # self.reset()
-        self.focus_interval.text = str(FOCUSED_TIME)
-        self.rest_interval.text = str(REST_TIME)
-
-    def on_leave(self, *args):
-
-        self.reset()
-
-    def save(self):
-
-        """
-        save the input prompted for Focus time and Rest time
-        :return: None
-        """
-
-        global FOCUSED_TIME
-        global REST_TIME
-
-        validity = 2
-        try:
-            self.focused_time = int(self.focus_interval.text)
-        except ValueError:
-            validity -= 1
-
-        try:
-            self.rest_time = int(self.rest_interval.text)
-        except ValueError:
-            validity -= 1
-
-        # valid inputs
-        if validity == 2:
-
-            self.saved = True
-            FOCUSED_TIME = self.focused_time
-            REST_TIME = self.rest_time
-
-            self.save_button.color = (0.1, 0.9, 0.1, 1)
-
-        else:
-            self.save_button.color = (0.3, 0.1, 0.1, 1)
-
-
-    def reset(self):
-
-        # reset
-        self.focused_time = FOCUSED_TIME
-        self.rest_time = REST_TIME
-
-        self.saved = False
-        self.save_button.color = (0.1, 0.1, 0.1, 1)
-
-
-
 class ResultsWindow(Screen):
 
     def __init__(self, **kwargs):
@@ -2456,6 +2503,76 @@ class ResultsWindow(Screen):
         self.data = {}
 
 
+""" GENERAL SETTINGS """
+
+
+class GeneralSettings(Screen):
+
+    def __init__(self, **kwargs):
+        super(GeneralSettings, self).__init__(**kwargs)
+
+        self.focused_time = FOCUSED_TIME
+        self.rest_time = REST_TIME
+
+        self.saved = False
+
+    def on_enter(self, *args):
+
+        print('\n--------------------- New Session Settings ---------------------')
+
+        # self.app = App.get_running_app()
+
+        # self.reset()
+        self.focus_interval.text = str(FOCUSED_TIME)
+        self.rest_interval.text = str(REST_TIME)
+
+    def on_leave(self, *args):
+
+        self.reset()
+
+    def save(self):
+
+        """
+        save the input prompted for Focus time and Rest time
+        :return: None
+        """
+
+        global FOCUSED_TIME
+        global REST_TIME
+
+        validity = 2
+        try:
+            self.focused_time = int(self.focus_interval.text)
+        except ValueError:
+            validity -= 1
+
+        try:
+            self.rest_time = int(self.rest_interval.text)
+        except ValueError:
+            validity -= 1
+
+        # valid inputs
+        if validity == 2:
+
+            self.saved = True
+            FOCUSED_TIME = self.focused_time
+            REST_TIME = self.rest_time
+
+            self.save_button.color = (0.1, 0.9, 0.1, 1)
+
+        else:
+            self.save_button.color = (0.3, 0.1, 0.1, 1)
+
+    def reset(self):
+
+        # reset
+        self.focused_time = FOCUSED_TIME
+        self.rest_time = REST_TIME
+
+        self.saved = False
+        self.save_button.color = (0.1, 0.1, 0.1, 1)
+
+
 """ SIMPLE TIMER """
 
 
@@ -2504,7 +2621,6 @@ class SimpleTimerSetting(Screen):
             self.validity = False
             self.start_button.color = (0.9, 0.1, 0.1, 1)
 
-
     def save(self):
 
         """ save and jump to the session """
@@ -2549,11 +2665,9 @@ class SimpleTimer(Screen):
         self.job = 0
         self.app = ""
 
-
     def on_enter(self, *args):
 
         print('\n--------- Focus Timer Window ---------')
-
 
     def load_duration(self, duration: int, ongoing=True):
 
@@ -2716,7 +2830,6 @@ class SimpleTimer(Screen):
             self.start_time = time.time()
             self.job = Clock.schedule_interval(self.ticking, 0.5)
 
-
     def quit(self):
 
         print('\ntimer #quit')
@@ -2818,7 +2931,6 @@ class ExtraSimpleTimer(Screen):
 
         self.app = App.get_running_app()
 
-
     def close(self):
 
         print('\nsimple timer #close')
@@ -2870,16 +2982,9 @@ class ActivityWindow(Screen):
 
         self.main_image.source = r"media/Activity window/activity_window.png"
 
-
-
         if name == 'timer':
             Window.size = (250, 200)
         pass
-"""
-Image:
-    id: main_image
-    source: 'media/main_screen/main_screen.png'
-    """
 
 
 class ScheduleWindow(Screen):
@@ -2915,6 +3020,24 @@ class ScheduleWindow(Screen):
 
         self.jobs_manager.save_task()
 
+    def change_image(self, flag=" "):
+
+        if flag == " ":
+            self.schedule_window_image.source = r'media/Schedule window/schedule_window.png'
+
+        elif flag == "add":
+            self.schedule_window_image.source = r'media/Schedule window/schedule_window_add.png'
+
+        elif flag == "save":
+            self.schedule_window_image.source = r'media/Schedule window/schedule_window:save.png'
+
+        elif flag == "return":
+            self.schedule_window_image.source = r'media/Schedule window/schedule_window_return.png'
+
+        else:
+            warnings.warn(f"flag <{flag}> does not correspond to any schedule button")
+
+
 
 class WindowManager(ScreenManager):
 
@@ -2923,7 +3046,7 @@ class WindowManager(ScreenManager):
         pass
 
 
-"""kv1 = Builder.load_file("planner.kv")
+kv1 = Builder.load_file("planner.kv")
 
 Window.size = (700, 500)
 
@@ -2935,4 +3058,4 @@ class PlannerApp(App):
 
 
 if __name__ == "__main__":
-    PlannerApp().run()"""
+    PlannerApp().run()

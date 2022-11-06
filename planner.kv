@@ -132,6 +132,7 @@ WindowManager:
 
     name: "schedule_window"
     jobs_manager: jobs_manager
+    schedule_window_image: schedule_window_image
 
     FloatLayout:
 
@@ -141,6 +142,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: schedule_window_image
+            source: r'media/Schedule window/schedule_window.png'
+            allow_stretch: True
+            keep_ratio: True
 
         # Columns
         GridLayout:
@@ -179,69 +186,51 @@ WindowManager:
 
 
         # Commands
-        BoxLayout:
 
-            orientation: "horizontal"
-            pos_hint: {"x": 0.26, "y": 0.01}
-            size_hint: 0.48, 0.1
-            spacing: 30
+        # add
+        Button:
 
-            # add
-            Button:
-                on_press:
-                    app.root.current_screen.jobs_manager.add_job()
+            pos_hint: {"x": 0.455, "y": 0.025}
+            size_hint: 0.09, 0.1
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
+            on_press:
+                root.change_image(flag="add")
 
-                Image:
-                    source: "media/add_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+            on_release:
+                root.change_image()
+                app.root.current_screen.jobs_manager.add_job()
 
-            # save
-            Button:
-                on_press:
-                    app.root.current_screen.jobs_manager.save_pending()
+            background_color: 0, 0, 0, 0
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
+        # save
+        Button:
+            pos_hint: {"x": 0.015, "y": 0.025}
+            size_hint: 0.07, 0.1
 
-                Image:
-                    source: "media/save_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+            on_press:
+                root.change_image(flag="save")
 
-            # return
-            Button:
-                on_press:
-                    app.root.current = "activity_window"
-                    app.root.transition.direction = "right"
+            on_release:
+                root.change_image()
+                app.root.current_screen.jobs_manager.save_pending()
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
+            background_color: 0, 0, 0, 0
 
-                Image:
-                    source: "media/return3_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
 
-            # quit
-            Button:
-                on_press:
-                    app.stop()
+        # return
+        Button:
+            pos_hint: {"x": 0.905, "y": 0.025}
+            size_hint: 0.07, 0.1
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
+            on_press:
+                root.change_image(flag="return")
 
-                Image:
-                    source: "media/quit_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+            on_release:
+                root.change_image()
+                app.root.current = "activity_window"
+                app.root.transition.direction = "right"
+
+            background_color: 0, 0, 0, 0
 
         JobsManager:
             id: jobs_manager
@@ -731,14 +720,13 @@ WindowManager:
     job_name: job_name
     priority: priority
     title: title
-    submit_button: submit_button
-    check_button: check_button
     hours: hours
     min: min
     duration: duration
     type_task: type_task
     type_project: type_project
     commands: commands
+    newjob_window_image: newjob_window_image
 
 
 
@@ -750,6 +738,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: newjob_window_image
+            source: r'media/NewJob window/newjob_window.png'
+            allow_stretch: True
+            keep_ratio: True
 
         Label:
             id: title
@@ -880,69 +874,47 @@ WindowManager:
 
             id: commands
             orientation: "horizontal"
-            pos_hint: {"x": 0.26, "y": 0.01}
-            size_hint: 0.48, 0.1
-            spacing: 30
+            pos_hint: {"x": 0.34, "y": 0.03}
+            size_hint: 0.31, 0.1
+            spacing: 21
 
             Button:
                 on_press:
+                    root.change_image(flag="check")
+
+                on_release:
                     root.check()
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    id: check_button
-                    source: "media/check_icon.png"
-                    size: self.parent.width, self.parent.height
-                    pos: self.parent.x, self.parent.y
+                background_color: 0, 0, 0, 0
 
             Button:
-                id: clear_button
-
                 on_press:
+                    root.change_image(flag="clear")
+
+                on_release:
+                    root.change_image()
                     root.clear()
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    source: "media/clear_icon.png"
-                    size: self.parent.width, self.parent.height
-                    pos: self.parent.x, self.parent.y
-
+                background_color: 0, 0, 0, 0
 
             Button:
                 on_press:
+                    root.change_image(flag="submit")
+
+                on_release:
                     root.submit()
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    id: submit_button
-                    source: "media/submit_iconT.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0, 0, 0, 0
 
             # return
             Button:
                 on_press:
+                    root.change_image(flag="return")
+
+                on_release:
                     root.returning()
 
-                background_down: ''
-                background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    source: "media/return5_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
-
-
+                background_color: 0, 0, 0, 0
 
 # Task #
 
@@ -954,13 +926,21 @@ WindowManager:
     deadline_clock: deadline_clock
     status: status
     task_functions: task_functions
+    job_icons_image: job_icons_image
 
     size_hint: 1, 0.1
 
+    Image:
+        id: job_icons_image
+        source: r"media/Job obj/job_icons.png"
+        pos: self.parent.x + 285, self.parent.y
+        allow_stretch: True
+        keep_ratio: True
+
     GridLayout:
         cols: 6
-        size_hint: 1, 1
-        pos_hint: {"x": 0., "top": 1}
+        size_hint: 1., 1
+        pos_hint: {"x": 0.015, "top": 1}
 
         Label:
             id: rank_pos
@@ -988,63 +968,61 @@ WindowManager:
             color: 0.1, 0.2, 0.1, 1
 
         BoxLayout:
+
             id: task_functions
             orientation: "horizontal"
+            size_hint: 1.4, 0.005
             padding: 16.
 
             Button:
                 on_press:
+                    root.change_image(flag="play")
+
+                on_release:
+                    root.change_image()
                     app.root.current = "interval_handler"
                     app.root.transition.direction = "left"
                     app.root.current_screen.load_data(data=root.provide_focus_data())
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/play2_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="done")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.jobs_manager.completed_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/done2_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="edit")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.jobs_manager.edit_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/edit2_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="delete")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/del_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
 
 <FinishedTask>:
@@ -1054,13 +1032,21 @@ WindowManager:
     score: score
     status: status
     deadline_clock: deadline_clock
+    job_icons_image: job_icons_image
 
     size_hint: 1, 0.1
+
+    Image:
+        id: job_icons_image
+        source: r"media/Finished obj/finished_task.png"
+        pos: self.parent.x + 285, self.parent.y
+        allow_stretch: True
+        keep_ratio: True
 
     GridLayout:
         cols: 6
         size_hint: 1, 1
-        pos_hint: {"x": 0., "top": 1}
+        pos_hint: {"x": 0.015, "top": 1}
 
         Label:
             id: rank_pos
@@ -1087,43 +1073,41 @@ WindowManager:
             text: ""
             color: 0.1, 0.5, 0.1, 0.9
 
-        BoxLayout:
 
-            orientation: "horizontal"
-            padding: 15.9
+        GridLayout:
+            cols: 4
+            size_hint: 1.4, 1
 
             Label:
                 text: ""
+
             Label:
                 text: ""
 
             Button:
                 on_press:
+                    root.change_image(flag="results")
+
+                on_release:
+                    root.change_image()
                     app.root.current = "results_window"
                     app.root.transition.direction = 'left'
                     app.root.current_screen.show(data=root.data)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/log_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="delete")
+
+                on_release:
                     app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/del_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
 
 # PROJECT #
@@ -1132,7 +1116,7 @@ WindowManager:
 
     name: "project_window"
     projects_manager: projects_manager
-
+    project_window_image: project_window_image
 
     FloatLayout:
 
@@ -1142,6 +1126,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: project_window_image
+            source: r"media/Project window/project_window.png"
+            allow_stretch: True
+            keep_ratio: True
 
         GridLayout:
             pos_hint: {"x": 0, "top": 1.47}
@@ -1165,40 +1155,37 @@ WindowManager:
                 color: 0, 0, 0, 1
                 bold: True
 
-
-
         Button:
-            pos_hint: {"x": 0.35, "y": 0.02}
+            pos_hint: {"x": 0.45, "y": 0.02}
             size_hint: 0.1, 0.12
 
             on_press:
+                root.project_window_image.source: r"media/Project window/project_window_add.png"
+
+            on_release:
+                root.project_window_image.source: r"media/Project window/project_window.png"
                 root.projects_manager.add_minitask()
 
             background_down: ''
             background_normal: ''
-            background_color: 0.65, 0.8, 1, 1
-
-            Image:
-                source: "media/add3_icon.png"
-                size: self.parent.size
-                pos: self.parent.x, self.parent.y
+            background_color: 0.65, 0.8, 1, 0.
 
         Button:
-            pos_hint: {"x": 0.55, "y": 0.02}
+            pos_hint: {"x": 0.89, "y": 0.02}
             size_hint: 0.1, 0.12
+
             on_press:
+                root.project_window_image.source: r"media/Project window/project_window_return.png"
+
+            on_release:
+                root.project_window_image.source: r"media/Project window/project_window.png"
                 app.root.current = "schedule_window"
                 app.root.transition.direction = "right"
                 app.root.current_screen.jobs_manager.update_project(updated_data=root.projects_manager.return_project_data())
 
             background_down: ''
             background_normal: ''
-            background_color: 0.65, 0.8, 1, 1
-
-            Image:
-                source: "media/return4_icon.png"
-                size: self.parent.size
-                pos: self.parent.x, self.parent.y
+            background_color: 0.65, 0.8, 1, 0.
 
 
         ProjectManager:
@@ -1215,13 +1202,21 @@ WindowManager:
     deadline_clock: deadline_clock
     status: status
     project_functions: project_functions
+    job_icons_image: job_icons_image
 
     size_hint: 1, 0.1
+
+    Image:
+        id: job_icons_image
+        source: r"media/Job obj/job_icons_prj.png"
+        pos: self.parent.x + 285, self.parent.y
+        allow_stretch: True
+        keep_ratio: True
 
     GridLayout:
         cols: 6
         size_hint: 1, 1
-        pos_hint: {"x": 0., "top": 1}
+        pos_hint: {"x": 0.015, "top": 1}
 
         Label:
             id: rank_pos
@@ -1251,69 +1246,58 @@ WindowManager:
         BoxLayout:
             id: project_functions
             orientation: "horizontal"
+            size_hint: 1.4, 0.005
             padding: 16.
 
             Button:
-                text: "open"
-                font_size: 10
                 on_press:
+                    root.change_image(flag="open")
+
+                on_release:
+                    root.change_image()
                     app.root.current = 'project_window'
                     app.root.transition.direction = 'left'
                     app.root.current_screen.projects_manager.load_project(project_data=root.data)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/open2_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
-                text: "done"
-                font_size: 10
                 on_press:
+                    root.change_image(flag="done")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.jobs_manager.completed_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/done2_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
-                text: "edit"
-                font_size: 10
                 on_press:
+                    root.change_image(flag="edit")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.jobs_manager.edit_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/edit2_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
-                text: "del"
-                font_size: 10
                 on_press:
+                    root.change_image(flag="delete")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/del_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
 <FinishedProject>:
 
@@ -1322,13 +1306,21 @@ WindowManager:
     score: score
     status: status
     deadline_clock: deadline_clock
+    job_icons_image: job_icons_image
 
     size_hint: 1, 0.1
+
+    Image:
+        id: job_icons_image
+        source: r"media/Finished obj/finished_task.png"
+        pos: self.parent.x + 285, self.parent.y
+        allow_stretch: True
+        keep_ratio: True
 
     GridLayout:
         cols: 6
         size_hint: 1, 1
-        pos_hint: {"x": 0., "top": 1}
+        pos_hint: {"x": 0.015, "top": 1}
 
         Label:
             id: rank_pos
@@ -1355,10 +1347,9 @@ WindowManager:
             text: ""
             color: 0.1, 0.5, 0.1, 0.9
 
-        BoxLayout:
-
-            orientation: "horizontal"
-            padding: 15.8
+        GridLayout:
+            cols: 4
+            size_hint: 1.4, 1
 
             Label:
                 text: ""
@@ -1367,36 +1358,29 @@ WindowManager:
                 text: ""
 
             Button:
-                text: "open"
-                font_size: 10
                 on_press:
+                    root.change_image(flag="open")
+
+                on_release:
+                    root.change_image()
                     app.root.current = 'project_window'
                     app.root.transition.direction = 'left'
                     app.root.current_screen.projects_manager.load_project(project_data=root.data)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/open2_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
             Button:
-                text: "del"
-                font_size: 10
                 on_press:
+                    root.change_image(flag="delete")
+
+                on_release:
                     app.root.current_screen.jobs_manager.delete_job(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 1
-
-                Image:
-                    source: "media/del_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.85, 1, 0.9, 0.
 
 
 <NewMiniTask>:
@@ -1404,11 +1388,10 @@ WindowManager:
     name: 'new_mini_task_window'
 
     title: title
-    submit_button: submit_button
-    check_button: check_button
     mini_task_name: mini_task_name
     rank: rank
     duration: duration
+    newminitask_window_image: newminitask_window_image
 
     FloatLayout:
 
@@ -1418,6 +1401,12 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
+
+        Image:
+            id: newminitask_window_image
+            source: r'media/NewJob window/newjob_window.png'
+            allow_stretch: True
+            keep_ratio: True
 
         Label:
             id: title
@@ -1487,64 +1476,53 @@ WindowManager:
 
         BoxLayout:
             orientation: "horizontal"
-            pos_hint: {"x": 0.26, "y": 0.01}
-            size_hint: 0.48, 0.1
-            spacing: 30
+            pos_hint: {"x": 0.34, "y": 0.03}
+            size_hint: 0.31, 0.1
+            spacing: 21
 
             Button:
                 on_press:
+                    root.change_image(flag="check")
+
+                on_release:
                     root.check()
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    id: check_button
-                    source: "media/check_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.8, 0.8, 0.8, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="clear")
+
+                on_release:
                     root.clear()
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    source: "media/clear_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.8, 0.8, 0.8, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="submit")
+
+                on_release:
                     root.submit()
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    id: submit_button
-                    source: "media/submit_iconT.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.8, 0.8, 0.8, 0.
 
             Button:
-
                 on_press:
+                    root.change_image(flag="return")
+
+                on_release:
                     root.submit(returning=True)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.8, 0.8, 0.8, 1
-
-                Image:
-                    source: "media/return5_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.8, 0.8, 0.8, 0.
 
 
 <MiniTask>:
@@ -1553,13 +1531,21 @@ WindowManager:
     status: status
     rank_pos: rank_pos
     mini_task_functions: mini_task_functions
+    minitask_icons_image: minitask_icons_image
 
     size_hint: 1, 0.1
 
+    Image:
+        id: minitask_icons_image
+        source: r"media/Mini task obj/minitask_icons.png"
+        pos: self.parent.x + 255, self.parent.y
+        allow_stretch: True
+        keep_ratio: True
+
     GridLayout:
         cols: 4
-        size_hint: 1, 1
-        pos_hint: {"x": 0., "top": 1}
+        size_hint: 0.95, 1
+        pos_hint: {"x": 0.015, "top": 1}
 
         Label:
             id: rank_pos
@@ -1579,63 +1565,59 @@ WindowManager:
         BoxLayout:
             id: mini_task_functions
             orientation: "horizontal"
-
-            padding: 14.7
-            spacing: 15
+            size_hint: 0.85, 0.005
+            padding: 10
+            spacing: 1
 
             Button:
                 on_press:
+                    root.change_image(flag="play")
+
+                on_release:
+                    root.change_image()
                     app.root.current = "interval_handler"
                     app.root.transition.direction = "left"
                     app.root.current_screen.load_data(data=root.provide_focus_data())
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 1
-
-                Image:
-                    source: "media/start4_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.65, 0.8, 1, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="done")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.projects_manager.completed_minitask(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 1
-
-                Image:
-                    source: "media/done3_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.65, 0.8, 1, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="edit")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.projects_manager.edit_minitask(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 1
-
-                Image:
-                    source: "media/edit3_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.65, 0.8, 1, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="delete")
+
+                on_release:
+                    root.change_image()
                     app.root.current_screen.projects_manager.delete_minitask(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 1
-
-                Image:
-                    source: "media/del3_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.65, 0.8, 1, 0.
 
 
 <FinishedMiniTask>:
@@ -1644,12 +1626,21 @@ WindowManager:
     status: status
     rank_pos: rank_pos
 
+    job_icons_image: job_icons_image
+
     size_hint: 1, 0.1
+
+    Image:
+        id: job_icons_image
+        source: r"media/Finished obj/finished_minitask.png"
+        pos: self.parent.x + 255, self.parent.y
+        allow_stretch: True
+        keep_ratio: True
 
     GridLayout:
         cols: 4
-        size_hint: 1, 1
-        pos_hint: {"x": 0., "top": 1}
+        size_hint: 0.95, 1
+        pos_hint: {"x": 0.015, "top": 1}
 
         Label:
             id: rank_pos
@@ -1666,44 +1657,40 @@ WindowManager:
             text: ""
             color: 0.1, 0.4, 0.1, 1
 
-        BoxLayout:
-
-            orientation: "horizontal"
-            padding: 14.9
-            spacing: 15
+        GridLayout:
+            cols: 4
+            size_hint: 0.9, 1
 
             Label:
                 text: ""
+
             Label:
                 text: ""
 
             Button:
                 on_press:
+                    root.change_image(flag="results")
+
+                on_release:
+                    root.change_image()
                     app.root.current = "results_window"
                     app.root.transition.direction = 'left'
                     app.root.current_screen.show(data=root.data)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 1
-
-                Image:
-                    source: "media/log3_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.65, 0.8, 1, 0.
 
             Button:
                 on_press:
+                    root.change_image(flag="delete")
+
+                on_release:
                     app.root.current_screen.projects_manager.delete_minitask(rank=root.rank)
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 1
-
-                Image:
-                    source: "media/del3_icon.png"
-                    size: self.parent.size
-                    pos: self.parent.x, self.parent.y
+                background_color: 0.65, 0.8, 1, 0.
 
 
 # SETTINGS #
@@ -1922,12 +1909,6 @@ WindowManager:
 
             background_color: 0.7, 0.8, 1, 0
 
-            #Image:
-            #    source: "media/return_icon_.png"
-            #    center_x: self.parent.center_x
-            #    center_y: self.parent.center_y
-            #    size: self.parent.size
-
 
 <SimpleTimer>:
 
@@ -1949,7 +1930,7 @@ WindowManager:
 
         Image:
             id: timer_image
-            source: f"media/Timer window/timer_go.png"
+            source: r"media/Timer window/timer_go.png"
             allow_stretch: True
             keep_ratio: True
 
@@ -2007,6 +1988,9 @@ WindowManager:
     name: "extra_simple_timer"
     background_color: 0.3, 0.3, 0.9, 1
 
+    name: "extra_simple_timer"
+    background_color: 0.3, 0.3, 0.9, 1
+
     FloatLayout:
 
         Image:
@@ -2016,10 +2000,11 @@ WindowManager:
 
         #  next   # <--- show button on the window
         Button:
-            size_hint: 0.15, 0.17
-            pos_hint: {"x": 0.85, "y": 0.01}
-            color: 0.1, 0.1, 0.1, 0.1
+            size_hint: 1, 1
+            pos_hint: {"x": 0., "y": 0.}
+            color: 0, 0, 0, 0
 
             on_press:
                 root.close()
+
 

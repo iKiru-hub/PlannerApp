@@ -1,9 +1,7 @@
 from kivy.config import Config
 Config.set('graphics', 'resizable', False)
-
 from kivy.lang import Builder
 from planner_lib import *
-
 
 
 """ APP """

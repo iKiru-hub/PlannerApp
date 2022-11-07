@@ -18,6 +18,7 @@ import cache_module
 
 FOCUSED_TIME = 30
 REST_TIME = 5
+RANK_WEIGHTS = (1, 0)
 
 
 """ JOBS """
@@ -383,7 +384,7 @@ class JobsManager(FloatLayout):
 
         scored = []
         for i, job in enumerate(self.current_jobs):
-            print('computing ', job.type)
+            #print('computing ', job.type)
             if job.type == 'finished task' or job.type == 'finished project':
                scored += [job]
                continue
@@ -405,7 +406,7 @@ class JobsManager(FloatLayout):
             job.update_priority(priority=new_priority)
 
             # score
-            value = self.rank_weights[0] * new_priority + self.rank_weights[1] * relative_deadline
+            value = RANK_WEIGHTS[0] * new_priority + RANK_WEIGHTS[1] * relative_deadline
             # print(f'task {task.name} value: {value} [{new_priority}, {relative_deadline}]')
             job.set_score(value=round(value, 1))
             scored += [job]
@@ -580,7 +581,7 @@ class JobsManager(FloatLayout):
 
     def refresh(self, *args):
 
-        print('\n -- refreshing --')
+        #print('\n -- refreshing --')
         self.clear_widgets()
         # self.current_tasks.sort(key=lambda u: u.priority, reverse=True)
         self.compute_scores()
@@ -591,7 +592,7 @@ class JobsManager(FloatLayout):
             job.y_pos = 0.9 - i * 0.1
             job.set_rank(rank=i)
             job.update_position()
-            print(f'job {job.name} [{job.type}]: score {job.value}, rank {job.rank}')
+            #print(f'job {job.name} [{job.type}]: score {job.value}, rank {job.rank}')
 
             newly_ordered += [job]
             self.add_widget(job)

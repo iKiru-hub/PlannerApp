@@ -20,7 +20,7 @@ class CacheInterface:
         if self.pending_filename in os.listdir(path=self.pending_path):
 
             # load
-            with open(f'{self.pending_path}\\{self.pending_filename}', 'rb') as f:
+            with open(f'{self.pending_path}/{self.pending_filename}', 'rb') as f:
 
                 pending_list = json.loads(f.read())
 
@@ -42,7 +42,7 @@ class CacheInterface:
             pending_list[obj['name']] = obj
 
         # save
-        with open(f"{self.pending_path}\\{self.pending_filename}", 'w') as f:
+        with open(f"{self.pending_path}/{self.pending_filename}", 'w') as f:
             f.write(json.dumps(pending_list))
 
         print(f'\n<{len(objects)} job objects successfully saved>')

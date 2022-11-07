@@ -161,28 +161,33 @@ WindowManager:
 
             Label:
                 text: "TASK"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.3, 0.2, 0.1, 0.8
                 bold: True
+                font_size: 17
 
             Label:
                 text: "SCORE"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.3, 0.2, 0.1, 0.8
                 bold: True
+                font_size: 17
 
             Label:
                 text: "DEADLINE"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.3, 0.2, 0.1, 0.8
                 bold: True
+                font_size: 17
 
             Label:
                 text: "STATUS"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.3, 0.2, 0.1, 0.8
                 bold: True
+                font_size: 17
 
             Label:
                 text: "OPTIONS"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.3, 0.2, 0.1, 0.8
                 bold: True
+                font_size: 17
 
 
         # Commands
@@ -748,7 +753,7 @@ WindowManager:
         Label:
             id: title
             text: ""
-            font_size: 24
+            font_size: 20
             bold: True
             color: 0.3, 0.2, 0.1, 1
             pos_hint: {"x": 0, "y": 0.4}
@@ -763,7 +768,7 @@ WindowManager:
             #
             Label:
                 text: "name"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             TextInput:
@@ -773,11 +778,12 @@ WindowManager:
                 base_direction: "rtl"
                 padding_x: 10, 130
                 padding_y: 14, 1
+                font_size: 17
 
             #
             Label:
                 text: "type"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             GridLayout:
@@ -786,21 +792,21 @@ WindowManager:
                 Button:
                     id: type_task
                     text: "task"
-                    font_size: 20
+                    font_size: 17
                     on_press:
                         root.set_job_type(jobtype='task')
 
                 Button:
                     id: type_project
                     text: "project"
-                    font_size: 20
+                    font_size: 17
                     on_press:
                         root.set_job_type(jobtype='project')
 
             #
             Label:
                 text: "priority"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             TextInput:
@@ -811,11 +817,12 @@ WindowManager:
                 base_direction: "rtl"
                 padding_x: 10, 135
                 padding_y: 14, 1
+                font_size: 17
 
             #
             Label:
                 text: "h deadline"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             GridLayout:
@@ -829,10 +836,11 @@ WindowManager:
                     base_direction: "rtl"
                     padding_x: 2, 30
                     padding_y: 14, 1
+                    font_size: 17
 
                 Label:
                     text: "h"
-                    font_size: 20
+                    font_size: 17
                     color: 0.1, 0.1, 0.1, 1
 
                 TextInput:
@@ -843,15 +851,16 @@ WindowManager:
                     base_direction: "rtl"
                     padding_x: 2, 30
                     padding_y: 14, 1
+                    font_size: 17
 
                 Label:
                     text: "m"
-                    font_size: 20
+                    font_size: 17
                     color: 0.1, 0.1, 0.1, 1
 
             Label:
                 text: "duration"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             GridLayout:
@@ -864,10 +873,11 @@ WindowManager:
                     base_direction: "rtl"
                     padding_x: 5, 65
                     padding_y: 14, 1
+                    font_size: 17
 
                 Label:
                     text: "m"
-                    font_size: 20
+                    font_size: 17
                     color: 0.1, 0.1, 0.1, 1
 
         BoxLayout:
@@ -945,26 +955,31 @@ WindowManager:
         Label:
             id: rank_pos
             text: ""
+            font_size: 17
             color: 0.1, 0.2, 0.1, 1
 
         Label:
             id: label
             text: ""
+            font_size: 17
             color: 0.1, 0.2, 0.1, 1
 
         Label:
             id: score
             text: ""
+            font_size: 17
             color: 0.1, 0.2, 0.1, 1
 
         Label:
             id: deadline_clock
             text: ""
+            font_size: 17
             color: 0.1, 0.2, 0.1, 1
 
         Label:
             id: status
             text: ""
+            font_size: 17
             color: 0.1, 0.2, 0.1, 1
 
         BoxLayout:
@@ -1051,26 +1066,31 @@ WindowManager:
         Label:
             id: rank_pos
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: label
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: score
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: deadline_clock
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: status
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
 
@@ -1144,16 +1164,19 @@ WindowManager:
                 text: "mini-TASK"
                 color: 0, 0, 0, 1
                 bold: True
+                font_size: 17
 
             Label:
                 text: "STATUS"
                 color: 0, 0, 0, 1
                 bold: True
+                font_size: 17
 
             Label:
                 text: "OPTIONS"
                 color: 0, 0, 0, 1
                 bold: True
+                font_size: 17
 
         Button:
             pos_hint: {"x": 0.45, "y": 0.02}
@@ -1221,26 +1244,31 @@ WindowManager:
         Label:
             id: rank_pos
             text: ""
+            font_size: 17
             color: 0.1, 0.3, 0.7, 1
 
         Label:
             id: label
             text: ""
+            font_size: 17
             color: 0.1, 0.3, 0.7, 1
 
         Label:
             id: score
             text: ""
+            font_size: 17
             color: 0.1, 0.3, 0.7, 1
 
         Label:
             id: deadline_clock
             text: ""
+            font_size: 17
             color: 0.1, 0.3, 0.7, 1
 
         Label:
             id: status
             text: ""
+            font_size: 17
             color: 0.1, 0.3, 0.7, 1
 
         BoxLayout:
@@ -1325,26 +1353,31 @@ WindowManager:
         Label:
             id: rank_pos
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: label
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: score
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: deadline_clock
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         Label:
             id: status
             text: ""
+            font_size: 17
             color: 0.1, 0.5, 0.1, 0.9
 
         GridLayout:
@@ -1411,7 +1444,7 @@ WindowManager:
         Label:
             id: title
             text: ""
-            font_size: 24
+            font_size: 20
             bold: True
             color: 0.3, 0.2, 0.1, 1
             pos_hint: {"x": 0, "y": 0.4}
@@ -1423,7 +1456,7 @@ WindowManager:
             size_hint: 0.7, 0.06
             Label:
                 text: "mini task name"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             TextInput:
@@ -1432,6 +1465,7 @@ WindowManager:
                 background_color: 1, 1, 1, 1
                 base_direction: "rtl"
                 padding_x: 1, 80
+                font_size: 17
 
         GridLayout:
             cols: 2
@@ -1439,7 +1473,7 @@ WindowManager:
             size_hint: 0.7, 0.06
             Label:
                 text: "rank"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             TextInput:
@@ -1448,6 +1482,7 @@ WindowManager:
                 background_color: 1, 1, 1, 1
                 base_direction: "rtl"
                 padding_x: 1, 110
+                font_size: 17
 
         GridLayout:
             cols: 2
@@ -1455,7 +1490,7 @@ WindowManager:
             size_hint: 0.7, 0.06
             Label:
                 text: "duration"
-                font_size: 20
+                font_size: 17
                 color: 0.1, 0.1, 0.1, 1
 
             GridLayout:
@@ -1467,10 +1502,12 @@ WindowManager:
                     background_color: 1, 1, 1, 1
                     base_direction: "rtl"
                     padding_x: 1, 50
+                    font_size: 17
+
 
                 Label:
                     text: "m"
-                    font_size: 20
+                    font_size: 17
                     color: 0.1, 0.1, 0.1, 1
 
 
@@ -1550,16 +1587,19 @@ WindowManager:
         Label:
             id: rank_pos
             text: ""
+            font_size: 17
             color: 0.2, 0.2, 0.8, 1
 
         Label:
             id: label
             text: ""
             color: 0.2, 0.2, 0.8, 1
+            font_size: 17
 
         Label:
             id: status
             text: ""
+            font_size: 17
             color: 0.2, 0.2, 0.8, 1
 
         BoxLayout:
@@ -1645,16 +1685,19 @@ WindowManager:
         Label:
             id: rank_pos
             text: ""
+            font_size: 17
             color: 0.1, 0.4, 0.1, 1
 
         Label:
             id: label
             text: ""
+            font_size: 17
             color: 0.1, 0.4, 0.1, 1
 
         Label:
             id: status
             text: ""
+            font_size: 20
             color: 0.1, 0.4, 0.1, 1
 
         GridLayout:

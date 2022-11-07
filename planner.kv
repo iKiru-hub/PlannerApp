@@ -161,27 +161,27 @@ WindowManager:
 
             Label:
                 text: "TASK"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.2, 0.4, 0.3, 1
                 bold: True
 
             Label:
                 text: "SCORE"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.2, 0.4, 0.3, 1
                 bold: True
 
             Label:
                 text: "DEADLINE"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.2, 0.4, 0.3, 1
                 bold: True
 
             Label:
                 text: "STATUS"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.2, 0.4, 0.3, 1
                 bold: True
 
             Label:
                 text: "OPTIONS"
-                color: 0.2, 0.7, 0.3, 1
+                color: 0.2, 0.4, 0.3, 1
                 bold: True
 
 
@@ -933,7 +933,7 @@ WindowManager:
     Image:
         id: job_icons_image
         source: r"media/Job obj/job_icons.png"
-        pos: self.parent.x + 285, self.parent.y
+        pos: self.parent.x + 570, self.parent.y
         allow_stretch: True
         keep_ratio: True
 
@@ -945,11 +945,13 @@ WindowManager:
         Label:
             id: rank_pos
             text: ""
+            fontsize: 10
             color: 0.1, 0.2, 0.1, 1
 
         Label:
             id: label
             text: ""
+            fontsize: 10
             color: 0.1, 0.2, 0.1, 1
 
         Label:
@@ -986,7 +988,7 @@ WindowManager:
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 0.
+                background_color: 0.85, 1, 0.9, 0.2
 
             Button:
                 on_press:
@@ -1022,7 +1024,7 @@ WindowManager:
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.85, 1, 0.9, 0.
+                background_color: 0.85, 1, 0.9, 0.2
 
 
 <FinishedTask>:
@@ -1039,7 +1041,7 @@ WindowManager:
     Image:
         id: job_icons_image
         source: r"media/Finished obj/finished_task.png"
-        pos: self.parent.x + 285, self.parent.y
+        pos: self.parent.x + 570, self.parent.y
         allow_stretch: True
         keep_ratio: True
 
@@ -1209,7 +1211,7 @@ WindowManager:
     Image:
         id: job_icons_image
         source: r"media/Job obj/job_icons_prj.png"
-        pos: self.parent.x + 285, self.parent.y
+        pos: self.parent.x + 570, self.parent.y
         allow_stretch: True
         keep_ratio: True
 
@@ -1313,7 +1315,7 @@ WindowManager:
     Image:
         id: job_icons_image
         source: r"media/Finished obj/finished_task.png"
-        pos: self.parent.x + 285, self.parent.y
+        pos: self.parent.x + 570, self.parent.y
         allow_stretch: True
         keep_ratio: True
 
@@ -1538,7 +1540,7 @@ WindowManager:
     Image:
         id: minitask_icons_image
         source: r"media/Mini task obj/minitask_icons.png"
-        pos: self.parent.x + 255, self.parent.y
+        pos: self.parent.x + 500, self.parent.y
         allow_stretch: True
         keep_ratio: True
 
@@ -1581,7 +1583,7 @@ WindowManager:
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 0.
+                background_color: 0.65, 0.8, 1, 0.3
 
             Button:
                 on_press:
@@ -1617,7 +1619,7 @@ WindowManager:
 
                 background_down: ''
                 background_normal: ''
-                background_color: 0.65, 0.8, 1, 0.
+                background_color: 0.65, 0.8, 1, 0.3
 
 
 <FinishedMiniTask>:
@@ -1633,7 +1635,7 @@ WindowManager:
     Image:
         id: job_icons_image
         source: r"media/Finished obj/finished_minitask.png"
-        pos: self.parent.x + 255, self.parent.y
+        pos: self.parent.x + 500, self.parent.y
         allow_stretch: True
         keep_ratio: True
 

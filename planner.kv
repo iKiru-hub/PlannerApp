@@ -294,6 +294,7 @@ WindowManager:
                 TextInput:
                     id: focus_interval
                     text: "20"
+					font_size: 17
                     multiline: False
 
                     background_color: 0.8, 0.8, 1, 1
@@ -313,6 +314,7 @@ WindowManager:
                 TextInput:
                     id: rest_interval
                     text: "5"
+					font_size: 17
                     multiline: False
 
                     background_color: 0.8, 0.8, 1, 1
@@ -333,6 +335,7 @@ WindowManager:
                 TextInput:
                     id: repetition
                     text: "2"
+					font_size: 17
                     multiline: False
 
                     background_color: 0.8, 0.8, 1, 1
@@ -405,7 +408,7 @@ WindowManager:
             font_size: 24
         Label:
             id: tot_focus
-            text: "0"
+            text: ""
             font_size: 24
 
         Label:
@@ -413,7 +416,7 @@ WindowManager:
             font_size: 24
         Label:
             id: tot_rest
-            text: "0"
+            text: ""
             font_size: 24
 
         Label:
@@ -421,7 +424,7 @@ WindowManager:
             font_size: 24
         Label:
             id: tot_idle
-            text: "0"
+            text: ""
             font_size: 24
 
         Label:
@@ -439,6 +442,7 @@ WindowManager:
         pos_hint: {"right": 1., "top": 0.1}
         size_hint: 0.1, 0.1
         text: "close"
+		font_size: 17
         on_press:
             root.forward_data()
 
@@ -465,7 +469,7 @@ WindowManager:
 
         Image:
             id: focus_timer_image
-            source: r'media/Focus session/focus_go.png'
+            source: r'media/Focus session/focus_nogo.png'
             allow_stretch: True
             keep_ratio: True
 
@@ -1906,7 +1910,7 @@ WindowManager:
 
             TextInput:
                 id: timer_time
-                text: "10"
+                text: "1"
                 multiline: False
                 font_size: 19
 
@@ -2029,25 +2033,21 @@ WindowManager:
 <ExtraSimpleTimer>:
 
     name: "extra_simple_timer"
-    background_color: 0.3, 0.3, 0.9, 1
-
-    name: "extra_simple_timer"
-    background_color: 0.3, 0.3, 0.9, 1
+    background_color: 0.3, 0.3, 0.9, 1	
 
     FloatLayout:
 
         Image:
-            source: f"media/meme_gif/overtime.gif"
-            size: self.parent.size
-            pos: self.parent.x, self.parent.y
+            source: r"media/meme_gif/overtime.gif"
+			allow_stretch: True
 
-        #  next   # <--- show button on the window
+		#  next   # <--- show button on the window
         Button:
             size_hint: 1, 1
             pos_hint: {"x": 0., "y": 0.}
-            color: 0, 0, 0, 0
-
-            on_press:
-                root.close()
+		    background_color: 0.4, 0.4, 0.4, 0.
+ 
+	        on_press:
+				root.close()
 
 

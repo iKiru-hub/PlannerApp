@@ -1,9 +1,10 @@
 
 Features to adjust/add:
 
-[]  schedule_window remove deadline 
-[]  activity_window add clock
-[]  schedule_window add clock
+[]  schedule_window: remove deadline
+[]  activity_window: add clock
+[]  schedule_window: add clock
 []  schedule window focus session: add datetime logs
 []  minitask: focus session
 []  minitask: global session default settings
+[]  timer: change play button at the beginning

@@ -8,8 +8,8 @@ class CacheInterface:
     def __init__(self):
 
         path = os.getcwd()
-
-        self.pending_path = path + "/cache"
+ 
+        self.pending_path = path + "/routines/PlannerApp" * ("PlannerApp" not in path) + "/cache"
         self.pending_filename = "pending_jobs.json"
 
     def retrieve_objects(self):

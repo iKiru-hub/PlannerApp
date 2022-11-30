@@ -9,7 +9,7 @@ class CacheInterface:
 
         path = os.getcwd()
  
-        self.pending_path = path + "/routines/PlannerApp" * ("PlannerApp" not in path) + "/cache"
+        self.pending_path = path + "/Workflow" * ("Workflow" not in path) + "/routines/PlannerApp" * ("PlannerApp" not in path) + "/cache"
         self.pending_filename = "pending_jobs.json"
 
     def retrieve_objects(self):

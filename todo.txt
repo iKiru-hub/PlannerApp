@@ -7,3 +7,4 @@ Features to adjust/add:
 []  schedule window focus session: add datetime logs
 []  minitask: focus session
 []  minitask: global session default settings
+[]  workflow star: end of workday timer

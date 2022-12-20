@@ -24,7 +24,7 @@ Inside a project there are mini-tasks
 
 A "working sessions" is defined as a "focus interval" "rest interval" and "idle interval"
 
-<img w![Screenshot 2022-12-20 at 17 59 33](https://user-images.githubusercontent.com/70176926/208724232-4a01bb4e-2b0d-4f23-be20-88b55d0fac1a.png)
+![Screenshot 2022-12-20 at 17 59 33](https://user-images.githubusercontent.com/70176926/208724232-4a01bb4e-2b0d-4f23-be20-88b55d0fac1a.png)
 
 <img width="246" alt="Screenshot 2022-12-20 at 17 55 32" src="https://user-images.githubusercontent.com/70176926/208723570-2f66532e-799b-4ca6-a35a-7dd7bf7ec3a7.png">
 

@@ -273,6 +273,7 @@ class NewJob(Screen):
 
 
 class JobsManager(FloatLayout):
+
     def __init__(self, **kwargs):
 
         super(JobsManager, self).__init__(**kwargs)
@@ -1884,6 +1885,7 @@ class NewSessionWindow(Screen):
 
 
 class FocusTimer(Screen):
+
     def __init__(self, **kwargs):
         super(FocusTimer, self).__init__(**kwargs)
 
@@ -2153,6 +2155,7 @@ class FocusTimer(Screen):
 
 
 class RestTimer(Screen):
+
     def __init__(self, **kwargs):
         super(RestTimer, self).__init__(**kwargs)
 
@@ -2308,6 +2311,7 @@ class RestTimer(Screen):
 
 
 class IdleTimer(Screen):
+
     def __init__(self, **kwargs):
         super(IdleTimer, self).__init__(**kwargs)
 
@@ -2425,6 +2429,7 @@ class IdleTimer(Screen):
 
 
 class ExtraFocusTimer(Screen):
+
     def __init__(self, **kwargs):
         super(ExtraFocusTimer, self).__init__(**kwargs)
 
@@ -2667,6 +2672,7 @@ class SimpleTimerSetting(Screen):
 
 
 class SimpleTimer(Screen):
+
     def __init__(self, **kwargs):
         super(SimpleTimer, self).__init__(**kwargs)
 
@@ -2966,10 +2972,28 @@ class ExtraSimpleTimer(Screen):
 
 
 class ActivityWindow(Screen):
+
+    def __init__(self, **kwargs):
+        super(ActivityWindow, self).__init__(**kwargs)
+        
+        self.clock = 0
+        self.app = ""
+
     def on_enter(self):
 
         print("\n----------------------- Activity Window -----------------------")
         Window.size = (700, 500)
+
+        self.app = App.get_running_app()
+        self.clock = Clock.schedule_interval(self.ticking, 1)
+    
+    def on_leave(self):
+
+        # cancel
+        try:
+            self.clock.cancel()
+        except AttributeError:
+            pass
 
     def button_pressed(self, name: str):
 
@@ -2998,6 +3022,20 @@ class ActivityWindow(Screen):
         if name == "timer":
             Window.size = (250, 200)
         pass
+
+    def ticking(self, *args):
+
+        """
+        the clock ticks
+
+        Returns
+        -------
+        None 
+        """
+        
+        now = time.localtime()
+        self.clock_display.text = f"{now.tm_hour:02d}:{now.tm_min:02d}"
+
 
 
 class ScheduleWindow(Screen):

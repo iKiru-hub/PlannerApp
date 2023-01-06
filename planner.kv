@@ -25,6 +25,7 @@ WindowManager:
     schedule_button: schedule_button
     settings_button: settings_button
     timer_button: timer_button
+    clock_display: clock_display
 
     FloatLayout:
 
@@ -34,7 +35,7 @@ WindowManager:
             Rectangle:
                 pos: self.pos
                 size: self.size
-
+       
         # schedule
         Button:
             id: schedule_button
@@ -126,7 +127,16 @@ WindowManager:
             source: f'media/Activity window/activity_window.png'
             allow_stretch: True
             keep_ratio: True
-
+        
+        # clock 
+        Label:
+            id: clock_display
+            text: "00:00"
+            pos_hint: {"x": -0.27, "y": 0.39}
+            color: 0.3, 0.3, 0.3, 1
+            bold: True
+            font_size: 55
+            
 
 <ScheduleWindow>:
 

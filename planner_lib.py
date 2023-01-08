@@ -8,7 +8,7 @@ from kivy.clock import Clock
 
 from kivy.lang import Builder
 
-from numpy import array
+from numpy import array, exp
 import time
 
 import cache_module
@@ -19,12 +19,18 @@ import cache_module
 FOCUSED_TIME = 30
 REST_TIME = 5
 RANK_WEIGHTS = (1, 0)
+IS_DEADLINE = False
 
 
 """ JOBS """
 
 
 class NewJob(Screen):
+
+    """
+    Window that prompts the settings for a new job in Schedule Window
+    """
+
     def __init__(self, **kwargs):
 
         super(NewJob, self).__init__(**kwargs)
@@ -45,7 +51,18 @@ class NewJob(Screen):
 
     def load_data(self, data: dict, title: str):
 
-        """load info about the new task to create"""
+        """
+        load info about the new task to create
+        
+        Parameters
+        ----------
+        data : dict 
+        title : str 
+
+        Returns
+        -------
+        None
+        """
 
         print("\nnew job, data:\n", data)
 
@@ -78,7 +95,13 @@ class NewJob(Screen):
 
     def check(self):
 
-        """check it the proposed task design is valid"""
+        """
+        check it the proposed task design is valid
+
+        Returns
+        -------
+        None
+        """
 
         print(f'\ntask "{self.job_name.text}" checked!')
         self.data["name"] = self.job_name.text
@@ -141,6 +164,10 @@ class NewJob(Screen):
 
         """
         clear the data of the task
+
+        Returns
+        -------
+        None
         """
 
         self.job_name.text = "give-me-a-name"
@@ -164,6 +191,14 @@ class NewJob(Screen):
 
     def submit(self):
 
+        """
+        if the user settings are valid, it returned to Schedule Window
+
+        Retuns
+        ------
+        None
+        """
+
         # valid task design
         if self.data["validity"]:
 
@@ -180,6 +215,14 @@ class NewJob(Screen):
 
     def returning(self):
 
+        """
+        save the job settings
+
+        Returns
+        -------
+        None
+        """
+
         # next
         self.app.root.current = "schedule_window"
         self.app.root.transition.direction = "right"
@@ -189,6 +232,14 @@ class NewJob(Screen):
         self.reset()
 
     def reset(self):
+
+        """
+        reset the job settings 
+
+        Returns
+        -------
+        None
+        """
 
         self.data = {
             "name": self.job_name.text,
@@ -203,8 +254,8 @@ class NewJob(Screen):
         self.job_name.text = ""
         self.priority.text = ""
         self.title.text = ""
-        self.hours.text = ""
-        self.min.text = ""
+        self.hours.text = "0"
+        self.min.text = "0"
         self.duration.text = ""
 
         # buttons
@@ -215,7 +266,19 @@ class NewJob(Screen):
 
     def set_job_type(self, jobtype="task"):
 
-        """change color of the job type buttons"""
+        """
+        change color of the job type buttons
+
+        Parameters
+        ----------
+        jobtype : str 
+            type of job to be set, allowed are "task" and "project",
+            default "project"
+
+        Returns
+        -------
+        None
+        """
 
         if jobtype == "task":
 
@@ -245,6 +308,19 @@ class NewJob(Screen):
 
     def change_image(self, flag=" "):
 
+        """
+        change the main image to mark a button press/transition
+
+        Parameters
+        ----------
+        flag : str 
+            query of the new image, default " "
+
+        Returns
+        -------
+        None
+        """
+
         if flag == " ":
             self.newjob_window_image.source = r"media/NewJob window/newjob_window.png"
 
@@ -273,6 +349,10 @@ class NewJob(Screen):
 
 
 class JobsManager(FloatLayout):
+
+    """
+    Object that manage the available jobs and update their states
+    """
 
     def __init__(self, **kwargs):
 
@@ -350,12 +430,24 @@ class JobsManager(FloatLayout):
 
     def compute_scores(self):
 
+        """
+        update of the scores of each available job 
+
+        CURRENTLY : no actual update, all job keep their priority as it was initially set
+
+        Returns
+        -------
+        None
+        """
+
         # get priorities list
         priorities = [int(job.priority) for job in self.current_jobs]
+        #exp_sum = sum([exp(x) for x in priorities])
 
         # define score #
         # sort by deadline from small to large
-        self.current_jobs.sort(key=lambda u: u.deadline, reverse=True)
+        if IS_DEADLINE:
+            self.current_jobs.sort(key=lambda u: u.deadline, reverse=True)
 
         scored = []
         for i, job in enumerate(self.current_jobs):
@@ -369,25 +461,28 @@ class JobsManager(FloatLayout):
                 new_priority = 10
             else:
                 try:
-                    new_priority = (
-                        10
-                        * (int(job.priority) - min(priorities))
-                        / (max(priorities) - min(priorities))
-                    )
+                    #new_priority = (
+                    #    10
+                    #    * (int(job.priority) - min(priorities))
+                    #    / (max(priorities) - min(priorities))
+                    #)
+                    #new_priority = round(exp(job.priority) / exp_sum, 2)
+                    new_priority = job.priority
                 except ZeroDivisionError:
                     # print('\n--same priorities: ', priorities)
-                    new_priority = int(sum(priorities) / len(priorities))
+                    #new_priority = int(sum(priorities) / len(priorities))
+                    raise ValueError('priority not computable, ZeroDivision')
 
-            # relative deadline
-            relative_deadline = 10 * (i + 1) / len(self.current_jobs)
+            # relative deadline | considered only if DEADLINE is enabled [IS_DEADLINE]
+            #relative_deadline = IS_DEADLINE * 10 * (i + 1) / len(self.current_jobs)
 
             # update priority
             job.update_priority(priority=new_priority)
 
             # score
-            value = RANK_WEIGHTS[0] * new_priority + RANK_WEIGHTS[1] * relative_deadline
+            #value = (RANK_WEIGHTS[0] * new_priority + RANK_WEIGHTS[1] * relative_deadline) / (RANK_WEIGHTS[0] + RANK_WEIGHTS[1])
             # print(f'task {task.name} value: {value} [{new_priority}, {relative_deadline}]')
-            job.set_score(value=round(value, 1))
+            job.set_score(value=round(new_priority))
             scored += [job]
 
         #
@@ -680,7 +775,8 @@ class TaskObject(FloatLayout):
         self.label.text = self.name
         self.score.text = str(self.value)
         self.status.text = "pending"
-        self.deadline_clock.text = ""
+        if IS_DEADLINE:
+            self.deadline_clock.text = ""
 
         # location
         self.y_pos = y_pos
@@ -716,7 +812,7 @@ class TaskObject(FloatLayout):
 
         # check #
         # beyond deadline
-        if elapsed >= self.deadline:
+        if elapsed >= self.deadline and IS_DEADLINE:
             self.deadline_clock.text = "0h 0m"
 
             self.label.color = (0.8, 0.2, 0.2, 1)
@@ -726,7 +822,8 @@ class TaskObject(FloatLayout):
             return
 
         # going
-        self.deadline_clock.text = f"{timer // 3600 // 24:.0f}d {timer // 3600 % 25:.0f}h {timer // 60 % 60:.0f}m"
+        if IS_DEADLINE:
+            self.deadline_clock.text = f"{timer // 3600 // 24:.0f}d {timer // 3600 % 25:.0f}h {timer // 60 % 60:.0f}m"
 
     def provide_focus_data(self):
 
@@ -799,7 +896,8 @@ class FinishedTask(FloatLayout):
         self.type = "finished task"
 
         # labels
-        self.deadline_clock.text = ""
+        if IS_DEADLINE:
+            self.deadline_clock.text = ""
         self.label.text = self.name
         self.score.text = str(self.factual_priority)
         self.status.text = "completed"
@@ -838,9 +936,10 @@ class FinishedTask(FloatLayout):
         self.factual_priority = record["priority"]
 
         # update description
-        self.deadline_clock.text = time.strftime(
-            "%H:%M:%S", time.localtime(record["creation"])
-        )
+        if IS_DEADLINE:
+            self.deadline_clock.text = time.strftime(
+                "%H:%M:%S", time.localtime(record["creation"])
+            )
         self.label.text = self.name
 
         print(f'\n<finished task> "{self.name}" setting a record')
@@ -1135,6 +1234,7 @@ class ProjectManager(FloatLayout):
 
 
 class ProjectObject(FloatLayout):
+
     def __init__(self, y_pos: float, data: dict, **kwargs):
         super(ProjectObject, self).__init__(**kwargs)
 
@@ -1169,7 +1269,8 @@ class ProjectObject(FloatLayout):
         self.label.text = self.name
         self.score.text = str(self.value)
         self.status.text = "pending"
-        self.deadline_clock.text = ""
+        if IS_DEADLINE:
+            self.deadline_clock.text = ""
 
         # location
         self.y_pos = y_pos
@@ -1201,7 +1302,7 @@ class ProjectObject(FloatLayout):
 
         # check #
         # end
-        if elapsed >= self.deadline:
+        if elapsed >= self.deadline and IS_DEADLINE:
             self.deadline_clock.text = "0h 0m"
 
             self.label.color = (0.8, 0.2, 0.2, 1)
@@ -1212,7 +1313,8 @@ class ProjectObject(FloatLayout):
             return
 
         # going
-        self.deadline_clock.text = f"{timer // 3600 // 24:.0f}d {timer // 3600 % 25:.0f}h {timer // 60 % 60:.0f}m"
+        if IS_DEADLINE:
+            self.deadline_clock.text = f"{timer // 3600 // 24:.0f}d {timer // 3600 % 25:.0f}h {timer // 60 % 60:.0f}m"
 
     def update_project_data(self, updated_data: dict):
 
@@ -1247,9 +1349,6 @@ class ProjectObject(FloatLayout):
 
 
 class FinishedProject(FloatLayout):
-    """
-    new task object, with buttons
-    """
 
     def __init__(self, y_pos: float, priority: int, **kwargs):
         super(FinishedProject, self).__init__(**kwargs)
@@ -1266,7 +1365,8 @@ class FinishedProject(FloatLayout):
         self.type = "finished project"
 
         # labels
-        self.deadline_clock.text = ""
+        if IS_DEADLINE:
+            self.deadline_clock.text = ""
         self.label.text = self.name
         self.score.text = str(self.factual_priority)
         self.status.text = "completed"
@@ -1307,9 +1407,10 @@ class FinishedProject(FloatLayout):
         self.factual_priority = record["priority"]
 
         # update description
-        self.deadline_clock.text = time.strftime(
-            "%H:%M:%S", time.localtime(record["creation"])
-        )
+        if IS_DEADLINE:
+            self.deadline_clock.text = time.strftime(
+                "%H:%M:%S", time.localtime(record["creation"])
+            )
         self.label.text = self.name
 
         print(
@@ -1885,7 +1986,6 @@ class NewSessionWindow(Screen):
 
 
 class FocusTimer(Screen):
-
     def __init__(self, **kwargs):
         super(FocusTimer, self).__init__(**kwargs)
 
@@ -2155,7 +2255,6 @@ class FocusTimer(Screen):
 
 
 class RestTimer(Screen):
-
     def __init__(self, **kwargs):
         super(RestTimer, self).__init__(**kwargs)
 
@@ -2311,7 +2410,6 @@ class RestTimer(Screen):
 
 
 class IdleTimer(Screen):
-
     def __init__(self, **kwargs):
         super(IdleTimer, self).__init__(**kwargs)
 
@@ -2429,7 +2527,6 @@ class IdleTimer(Screen):
 
 
 class ExtraFocusTimer(Screen):
-
     def __init__(self, **kwargs):
         super(ExtraFocusTimer, self).__init__(**kwargs)
 
@@ -2529,6 +2626,11 @@ class ResultsWindow(Screen):
 
 
 class GeneralSettings(Screen):
+
+    """
+    Window in which the user can change the General Settings
+    """
+
     def __init__(self, **kwargs):
         super(GeneralSettings, self).__init__(**kwargs)
 
@@ -2555,7 +2657,10 @@ class GeneralSettings(Screen):
 
         """
         save the input prompted for Focus time and Rest time
-        :return: None
+        
+        Returns
+        -------
+        None
         """
 
         global FOCUSED_TIME
@@ -2672,7 +2777,6 @@ class SimpleTimerSetting(Screen):
 
 
 class SimpleTimer(Screen):
-
     def __init__(self, **kwargs):
         super(SimpleTimer, self).__init__(**kwargs)
 
@@ -2972,10 +3076,9 @@ class ExtraSimpleTimer(Screen):
 
 
 class ActivityWindow(Screen):
-
     def __init__(self, **kwargs):
         super(ActivityWindow, self).__init__(**kwargs)
-        
+
         self.clock = 0
         self.app = ""
 
@@ -2986,7 +3089,7 @@ class ActivityWindow(Screen):
 
         self.app = App.get_running_app()
         self.clock = Clock.schedule_interval(self.ticking, 1)
-    
+
     def on_leave(self):
 
         # cancel
@@ -3030,12 +3133,11 @@ class ActivityWindow(Screen):
 
         Returns
         -------
-        None 
+        None
         """
-        
+
         now = time.localtime()
         self.clock_display.text = f"{now.tm_hour:02d}:{now.tm_min:02d}"
-
 
 
 class ScheduleWindow(Screen):

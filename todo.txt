@@ -1,11 +1,13 @@
 
 Features to adjust/add:
 
-[ ]  schedule_window: remove deadline
+[x]  schedule_window: remove deadline
 [x]  activity_window: add clock
-[ ]  schedule_window: add clock
-[ ]  schedule window focus session: add datetime logs
+[x]  schedule_window: add clock
+[ ]  schedule_window focus session: add datetime logs
+[ ]  schedule_window: nicely spaced columns header
 [ ]  minitask: focus session
 [ ]  minitask: global session default settings
 [ ]  workflow star: end of workday timer
 [ ]  time: colorflow
+

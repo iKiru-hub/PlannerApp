@@ -45,6 +45,8 @@ class NewJob(Screen):
 
         print("\n------- New Job Window -------")
 
+        print('duration ', self.duration.text, 'm')
+
     def on_leave(self, *args):
 
         self.reset()
@@ -63,6 +65,8 @@ class NewJob(Screen):
         -------
         None
         """
+        
+        self.app = App.get_running_app()
 
         print("\nnew job, data:\n", data)
 
@@ -91,7 +95,6 @@ class NewJob(Screen):
         # set type
         self.set_job_type(jobtype=data["type"])
 
-        self.app = App.get_running_app()
 
     def check(self):
 
@@ -386,7 +389,7 @@ class JobsManager(FloatLayout):
                 "name": f"job {len(self.current_jobs)+1}",
                 "priority": "1",
                 "deadline": 7200,
-                "duration": 30,
+                "duration": 120,
                 "type": "task",
                 "validity": False,
             }
@@ -3076,6 +3079,7 @@ class ExtraSimpleTimer(Screen):
 
 
 class ActivityWindow(Screen):
+
     def __init__(self, **kwargs):
         super(ActivityWindow, self).__init__(**kwargs)
 
@@ -3153,6 +3157,7 @@ class ScheduleWindow(Screen):
         self.current_tasks = []
         self.current_popup = ""
         self.app = ""
+        self.clock = 0
 
         self.entered_count = 0
 
@@ -3161,12 +3166,14 @@ class ScheduleWindow(Screen):
         print("\n--------------------- Schedule Window ---------------------")
 
         self.entered_count += 1
+        self.app = App.get_running_app()
 
         # load pending tasks
         if self.entered_count <= 1:
-            self.app = App.get_running_app()
             self.app.root.current_screen.jobs_manager.app = self.app
             self.app.root.current_screen.jobs_manager.load_pending()
+        
+        self.clock = Clock.schedule_interval(self.ticking, 1)
 
     def save_task(self):
 
@@ -3196,6 +3203,19 @@ class ScheduleWindow(Screen):
 
         else:
             warnings.warn(f"flag <{flag}> does not correspond to any schedule button")
+
+    def ticking(self, *args):
+
+        """
+        the clock ticks
+
+        Returns
+        -------
+        None
+        """
+
+        now = time.localtime()
+        self.clock_display.text = f"{now.tm_hour:02d}:{now.tm_min:02d}"
 
 
 class WindowManager(ScreenManager):

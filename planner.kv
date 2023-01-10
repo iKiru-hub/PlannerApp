@@ -143,6 +143,7 @@ WindowManager:
     name: "schedule_window"
     jobs_manager: jobs_manager
     schedule_window_image: schedule_window_image
+    clock_display: clock_display
 
     FloatLayout:
 
@@ -158,6 +159,15 @@ WindowManager:
             source: r'media/Schedule window/schedule_window.png'
             allow_stretch: True
             keep_ratio: True
+
+        # clock 
+        Label:
+            id: clock_display
+            text: "00:00"
+            pos_hint: {"x": -0.39, "y": 0.44}
+            color: 0.3, 0.3, 0.3, 0.7
+            bold: True
+            font_size: 27
 
         # Columns
         GridLayout:

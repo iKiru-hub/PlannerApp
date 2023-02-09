@@ -1,15 +1,24 @@
 import os
 import json
+import sys 
 
+
+
+# adjust path to the operating system
+if sys.platform == 'win32':
+    split = '\\'
+else:
+    split = '/'
+
+# define the path to the cache folder
+PATH = os.getcwd()
+PENDING_PATH = PATH + f"{split}Workflow" * ("workflow" not in PATH and "Workflow" not in PATH) + f"{split}routines{split}PlannerApp" * ("PlannerApp" not in PATH) + f"{split}cache"
 
 
 class CacheInterface:
 
     def __init__(self):
 
-        path = os.getcwd()
- 
-        self.pending_path = path + "/Workflow" * ("Workflow" not in path) + "/routines/PlannerApp" * ("PlannerApp" not in path) + "/cache"
         self.pending_filename = "pending_jobs.json"
 
     def retrieve_objects(self):
@@ -17,10 +26,10 @@ class CacheInterface:
         """ retrieve eventual pending tasks / projects """
 
         # check if the file of pending objects is there
-        if self.pending_filename in os.listdir(path=self.pending_path):
+        if self.pending_filename in os.listdir(path=PENDING_PATH):
 
             # load
-            with open(f'{self.pending_path}/{self.pending_filename}', 'rb') as f:
+            with open(f'{PENDING_PATH}{split}{self.pending_filename}', 'rb') as f:
 
                 pending_list = json.loads(f.read())
 
@@ -42,7 +51,7 @@ class CacheInterface:
             pending_list[obj['name']] = obj
 
         # save
-        with open(f"{self.pending_path}/{self.pending_filename}", 'w') as f:
+        with open(f"{PENDING_PATH}{split}{self.pending_filename}", 'w') as f:
             f.write(json.dumps(pending_list))
 
         print(f'\n<{len(objects)} job objects successfully saved>')

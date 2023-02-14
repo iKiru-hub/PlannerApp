@@ -1,0 +1,180 @@
+WindowManager:
+    SimpleTimerSetting:
+    SimpleTimer:
+    ExtraSimpleTimer:
+
+
+# SIMPLE TIMER #
+
+<SimpleTimerSetting>:
+
+    name: "simple_timer_setting"
+
+    timer_time: timer_time
+    start_button: start_button
+    timer_setting_image: timer_setting_image
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.8, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            id: timer_setting_image
+            source: r"media/Timer window/timer_settings.png"
+            allow_stretch: True
+            keep_ratio: True
+
+        GridLayout:
+            cols: 2
+            size_hint: 0.6, 0.15
+            pos_hint: {"x": 0.26, "y": 0.6}
+
+            TextInput:
+                id: timer_time
+                text: "1"
+                multiline: False
+                font_size: 19
+
+                background_color: 1, 1, 1, 0.3
+                base_direction: "rtl"
+                padding_y: 4, 2
+                padding_x: 2, 5
+
+            Label:
+                text: "min"
+                color: 0.1, 0.1, 0.1, 1
+                font_size: 19
+
+        # start
+        Button:
+            id: start_button
+            text: "start"
+            font_size: 21
+            pos_hint: {"x": 0.26, "y": 0.25}
+            size_hint: 0.3, 0.2
+            background_color: (0.2, 0.2, 0.7, 0.3)
+            color: 0.1, 0.1, 0.1, 1
+
+            on_press:
+                root.check_inputs()
+                if root.saved: app.root.current = "simple_timer"
+                if root.saved: app.root.transition.direction = "left"
+                #if root.saved: app.root.current_screen.load_duration()
+
+        # quit
+        Button:
+            pos_hint: {"x": 0.7, "y": 0.13}
+            size_hint: 0.115, 0.14
+
+            on_press:
+                root.change_image(pressed=True)
+
+            on_release:
+                root.change_image()
+                root.quit()
+                app.root.current = "activity_window"
+                app.root.transition.direction = "right"
+
+            background_color: 0.7, 0.8, 1, 0
+
+
+<SimpleTimer>:
+
+    name: "simple_timer"
+
+    display: display
+    play_pause: play_pause
+    #play_pause_icon: play_pause_icon
+    timer_image: timer_image
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.4, 0.9, 0.4, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            id: timer_image
+            source: r"media/Timer window/timer_go.png"
+            allow_stretch: True
+            keep_ratio: True
+
+        # timer display
+        Label:
+            id: display
+            text: "00:10"
+            font_size: 70
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1.1}
+
+        # buttons
+        BoxLayout:
+
+            orientation: "horizontal"
+            pos_hint: {"x": 0.22, "y": 0.12}
+            size_hint: 0.6, 0.16
+            spacing: 20
+
+            # play pause
+            Button:
+                id: play_pause
+                on_press:
+                    root.change_image(pressed=True)
+                on_release:
+                    root.change_image()
+                    root.update()
+
+                background_color: 0.7, 0.8, 1, 0
+
+            # reset
+            Button:
+                on_press:
+                    root.change_image(flag='reset')
+
+                on_release:
+                    root.reset()
+                    root.change_image(flag='void')
+
+                background_color: 0.7, 0.8, 1, 0
+
+            # return
+            Button:
+                on_press:
+                    root.change_image(flag='return')
+
+                on_release:
+                    root.change_image(flag='void')
+                    app.root.current = "simple_timer_setting"
+                    root.manager.transition.direction = "left"
+
+                background_color: 0.7, 0.8, 1, 0
+
+<ExtraSimpleTimer>:
+
+    name: "extra_simple_timer"
+    background_color: 0.3, 0.3, 0.9, 1	
+
+    FloatLayout:
+
+        Image:
+            source: r"media/meme_gif/overtime.gif"
+			allow_stretch: True
+
+		#  next   # <--- show button on the window
+        Button:
+            size_hint: 1, 1
+            pos_hint: {"x": 0., "y": 0.}
+		    background_color: 0.4, 0.4, 0.4, 0.
+ 
+	        on_press:
+				root.close()
+
+

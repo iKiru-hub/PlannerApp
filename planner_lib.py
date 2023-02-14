@@ -10,8 +10,13 @@ from kivy.lang import Builder
 
 from numpy import array, exp
 import time
+import sys
+import os
 
 import cache_module
+
+# set current working directory
+os.chdir(cache_module.APP_PATH)
 
 
 """ CONSTANTS """
@@ -20,6 +25,9 @@ FOCUSED_TIME = 30
 REST_TIME = 5
 RANK_WEIGHTS = (1, 0)
 IS_DEADLINE = False
+
+# cache module 
+cache_module_obj = cache_module.CacheInterface()
 
 
 """ JOBS """
@@ -375,7 +383,7 @@ class JobsManager(FloatLayout):
         self.rank_weights = (0.5, 0.5)
 
         # storage
-        self.cache = cache_module.CacheInterface()
+        self.cache = cache_module_obj
 
         self.refresh()
 
@@ -2706,7 +2714,9 @@ class GeneralSettings(Screen):
 
 
 class SimpleTimerSetting(Screen):
+
     def __init__(self, **kwargs):
+
         super(SimpleTimerSetting, self).__init__(**kwargs)
 
         self.duration = 0.0
@@ -2751,13 +2761,24 @@ class SimpleTimerSetting(Screen):
 
     def save(self):
 
-        """save and jump to the session"""
+        """
+        save and jump to the session
+
+        Returns
+        -------
+        None
+        """
 
         self.duration = int(self.timer_time.text)
 
         print("\nsession settings saved:\n", self.duration)
 
         self.saved = True
+
+        # save cache
+        cache_module_obj.save_timer_cache(timer_cache={"duration": self.duration})
+
+        time.sleep(0.5)
 
     def get_duration(self):
 
@@ -2780,6 +2801,7 @@ class SimpleTimerSetting(Screen):
 
 
 class SimpleTimer(Screen):
+
     def __init__(self, **kwargs):
         super(SimpleTimer, self).__init__(**kwargs)
 
@@ -2798,16 +2820,31 @@ class SimpleTimer(Screen):
 
         print("\n--------- Focus Timer Window ---------")
 
-    def load_duration(self, duration: int, ongoing=True):
+        self._load_duration()
+
+    def _load_duration(self):
 
         """
         load the interval
-        :param duration: int, minutes
-        :param ongoing: bool,
-        :return: saved values
+
+        Return
+        ------
+        None
         """
 
-        # load
+        # retrieve time cache 
+        present, timer_cache = cache_module_obj.get_timer_cache()
+
+        if not present:
+            print("\n!Error: timer cache not found")
+            sys.exit("<timer aborted>")
+
+        # delete cache
+        cache_module_obj.delete_timer_cache()
+
+        # define timer data
+        duration = timer_cache['duration']
+        ongoing = True  # <--------------------------- ugly
         self.tot_duration = duration * 60
         self.checkpoint = duration * 60
         self.current_time = [duration, 0]
@@ -3126,8 +3163,8 @@ class ActivityWindow(Screen):
 
         self.main_image.source = r"media/Activity window/activity_window.png"
 
-        if name == "timer":
-            Window.size = (250, 200)
+        #if name == "timer":
+        #    Window.size = (250, 200)
         pass
 
     def ticking(self, *args):
@@ -3142,6 +3179,19 @@ class ActivityWindow(Screen):
 
         now = time.localtime()
         self.clock_display.text = f"{now.tm_hour:02d}:{now.tm_min:02d}"
+
+    def timer_button_pressed(self):
+
+        """
+        timer button pressed, open timer window
+
+        Returns
+        -------
+        None
+        """
+
+        print('\n-timer button pressed')
+        os.system(f"./timer_window_run.sh")
 
 
 class ScheduleWindow(Screen):

@@ -105,9 +105,9 @@ WindowManager:
 
             on_release:
                 root.button_released(name='timer')
-                app.root.current = "simple_timer_setting"
-                app.root.current_screen.reset()
-                root.manager.transition.direction = "left"
+                #app.root.current = "simple_timer_setting"
+                #root.manager.transition.direction = "left"
+                root.timer_button_pressed()
 
 
         # star routine
@@ -1958,7 +1958,7 @@ WindowManager:
                 root.check_inputs()
                 if root.saved: app.root.current = "simple_timer"
                 if root.saved: app.root.transition.direction = "left"
-                if root.saved: app.root.current_screen.load_duration(duration=root.get_duration())
+                #if root.saved: app.root.current_screen.load_duration()
 
         # quit
         Button:

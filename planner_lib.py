@@ -10,17 +10,21 @@ from kivy.lang import Builder
 
 from numpy import array, exp
 import time
+import datetime
 import sys
 import os
+import logging
 
+# app utils 
 import cache_module
 
 # set current working directory
 os.chdir(cache_module.APP_PATH)
 
 
-""" CONSTANTS """
+""" SETTINGS """
 
+# constants
 FOCUSED_TIME = 30
 REST_TIME = 5
 RANK_WEIGHTS = (1, 0)
@@ -28,6 +32,14 @@ IS_DEADLINE = False
 
 # cache module 
 cache_module_obj = cache_module.CacheInterface()
+
+# general logger
+general_logger = logging.getLogger(f"General")
+general_logger.setLevel(logging.DEBUG)
+stdout = logging.StreamHandler(stream=sys.stdout)
+fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+stdout.setFormatter(fmt)
+general_logger.addHandler(stdout)
 
 
 """ JOBS """
@@ -49,15 +61,24 @@ class NewJob(Screen):
 
         self.app = ""
 
+        # logger
+        self.logger = logging.getLogger(f"NewJob")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
     def on_enter(self, *args):
 
-        print("\n------- New Job Window -------")
-
-        print('duration ', self.duration.text, 'm')
+        self.logger.info("NewJob Window entered")
 
     def on_leave(self, *args):
 
         self.reset()
+        self.logger.info("NewJob Window left")
 
     def load_data(self, data: dict, title: str):
 
@@ -76,7 +97,7 @@ class NewJob(Screen):
         
         self.app = App.get_running_app()
 
-        print("\nnew job, data:\n", data)
+        self.logger.debug(f"NewJob Window loaded with data: {data}")
 
         self.data = data
         self.original = data
@@ -95,14 +116,13 @@ class NewJob(Screen):
         # set duration
         if "duration" in list(self.data.keys()):
             self.duration.text = str(self.data["duration"])
-            print("duration ", self.duration.text, type(self.duration.text))
+            self.logger.debug(f"duration found in data: {self.data['duration']}")
         else:
-            print("!no duration found")
+            self.logger.warning("duration not found in data")
             self.duration.text = "-"
 
         # set type
         self.set_job_type(jobtype=data["type"])
-
 
     def check(self):
 
@@ -114,7 +134,6 @@ class NewJob(Screen):
         None
         """
 
-        print(f'\ntask "{self.job_name.text}" checked!')
         self.data["name"] = self.job_name.text
 
         triple_check = 0
@@ -127,7 +146,7 @@ class NewJob(Screen):
             triple_check += 1
 
         except ValueError:
-            print(f'\n!Error: "{self.priority.text}" is an invalid priority')
+            self.logger.error(f'"{self.priority.text}" is an invalid priority')
             self.priority.text = ""
             self.data["priority"] = 0
 
@@ -140,7 +159,7 @@ class NewJob(Screen):
                 triple_check += 1
 
             except ValueError:
-                print(f'\n!Error: "{self.duration.text}" is an invalid duration')
+                self.logger.error(f'"{self.duration.text}" is an invalid duration')
                 self.duration.text = ""
                 self.data["duration"] = 0
 
@@ -154,9 +173,7 @@ class NewJob(Screen):
             triple_check += 1
 
         except ValueError:
-            print(
-                f'\n!Error: "{self.hours.text}h {self.min.text}m" are an invalid deadline'
-            )
+            self.logger.error(f"{self.hours.text}h {self.min.text}m are an invalid deadline")
             self.hours.text = ""
             self.min.text = ""
             self.data["deadline"] = 0
@@ -165,7 +182,7 @@ class NewJob(Screen):
         if triple_check == (2 + 1 * (self.data["type"] == "task")):
 
             self.data["validity"] = True
-            print("granted!")
+            self.logger.debug(f"NewJob Window data is valid: {self.data}")
 
         else:
 
@@ -200,6 +217,8 @@ class NewJob(Screen):
         self.type_task.color = (0.3, 0.8, 0.3, 1)
         self.type_project.color = (1, 1, 1, 1)
 
+        self.logger.info('NewJob Window data cleared')
+
     def submit(self):
 
         """
@@ -222,6 +241,8 @@ class NewJob(Screen):
 
             # reset
             self.reset()
+
+            self.logger.info("NewJob Window data submitted")
             return
 
     def returning(self):
@@ -387,6 +408,16 @@ class JobsManager(FloatLayout):
 
         self.refresh()
 
+        # logging
+        self.logger = logging.getLogger("JobsManager")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
     def add_job(self, data=None, title="New Task"):
 
         """handle the addition of a new task"""
@@ -406,29 +437,58 @@ class JobsManager(FloatLayout):
         self.app.root.current_screen.load_data(data=data, title=title)
         self.app.root.transition.direction = "left"
 
+        self.logger.info(f"adding new job '{title}'")
+
     def save_job(self, new_job_data: dict):
 
-        print("\nsaving task... ", end="")
+        """handle the saving of a new task
+
+        Parameters
+        ----------
+        new_job_data : dict
+            dictionary containing the data of the new job
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"adding new job")
 
         # task job
         if new_job_data["type"] == "task":
 
             new_task_instance = TaskObject(y_pos=0.0, data=new_job_data)
-            # self.add_widget(new_task_instance)
             self.current_jobs += [new_task_instance]
-            print("+new task added!")
+
+            self.logger.info(f"+new task added")
 
         # project job
         elif new_job_data["type"] == "project":
-            new_task_instance = ProjectObject(y_pos=0.0, data=new_job_data)
 
+            new_task_instance = ProjectObject(y_pos=0.0, data=new_job_data)
             self.current_jobs += [new_task_instance]
-            print("+new project added!")
+
+            self.logger.info(f"+new project added")
 
         # update ranking
         self.refresh()
 
     def edit_job(self, rank: int):
+
+        """handle the edition of a task
+
+        Parameters
+        ----------
+        rank : int
+            rank of the task to edit
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"editing job, {rank=}")
 
         # get task
         job = self.current_jobs[rank]
@@ -502,8 +562,19 @@ class JobsManager(FloatLayout):
 
     def delete_job(self, rank: int):
 
-        """handle the deletion of an old task"""
-        print(f'\njob "{self.current_jobs[rank].name}" deleted')
+        """handle the deletion of an old task
+
+        Parameters
+        ----------
+        rank : int
+            rank of the task to delete
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"deleting job, {rank=}")
 
         del self.current_jobs[rank]
 
@@ -511,16 +582,24 @@ class JobsManager(FloatLayout):
 
     def completed_job(self, rank: int):
 
-        """definition of a "completed task" and substitution of the old task"""
+        """definition of a "completed task" and substitution of the old task
+
+        Parameters
+        ----------
+        rank : int
+            rank of the task to complete
+
+        Returns
+        -------
+        None
+        """
 
         self.completed_jobs += 1
 
         # get completed job
         job = self.current_jobs[rank]
 
-        print(
-            f"\njob manager turning a <{job.type}> into a <finished {job.type}>, rank {job.rank} queried {rank} jobs {self.current_jobs}"
-        )
+        self.logger.info(f"turning a <{job.type}> into a <finished {job.type}>")
 
         # define record
         full_record = {}
@@ -569,7 +648,21 @@ class JobsManager(FloatLayout):
 
     def unfinish_project(self, rank: int, updated_data: dict):
 
-        """make a finished project an ongoing project again"""
+        """make a finished project an ongoing project again
+
+        Parameters
+        ----------
+        rank : int
+            rank of the project to unfinish
+        updated_data : dict
+            data to update
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"unfinishing project, {rank=}")
 
         # get job
         job = self.current_jobs[rank]
@@ -601,9 +694,19 @@ class JobsManager(FloatLayout):
 
     def update_focus_task(self, focus_package: dict):
 
-        """update task from session window"""
+        """update task from session window
 
-        print("\ntask update: ", focus_package)
+        Parameters
+        ----------
+        focus_package : dict
+            data from the session window
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.debug(f"updating focus task, package: {focus_package=}")
 
         job = self.current_jobs[focus_package["rank"]]
 
@@ -626,15 +729,24 @@ class JobsManager(FloatLayout):
         # check if the task was completed
         if focus_package["done"]:
             self.completed_job(rank=focus_package["rank"])
-            print("complete!")
 
         self.refresh()
 
     def update_project(self, updated_data: dict):
 
-        """update project from project window"""
+        """update project from project window
 
-        print("\nproject update: ", updated_data)
+        Parameters
+        ----------
+        updated_data : dict
+            data from the project window
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.debug(f"updating project, updated_data: {updated_data=}")
 
         job = self.current_jobs[updated_data["rank"]]
 
@@ -665,7 +777,6 @@ class JobsManager(FloatLayout):
 
         # check if the project was completed:
         if updated_data["done"]:
-            print("updating project: rank sent ", job.rank)
             self.completed_job(rank=-1)
             return
 
@@ -698,11 +809,13 @@ class JobsManager(FloatLayout):
         global FOCUSED_TIME
         global REST_TIME
 
+        self.logger.debug("loading pending jobs")
+
         # retrieve
         is_available, saved_objects = self.cache.retrieve_objects()
 
         if not is_available:
-            print("\n% no precedent job loaded %")
+            self.logger.debug("no saved pending tasks")
             return
 
         # update
@@ -714,8 +827,8 @@ class JobsManager(FloatLayout):
 
             self.save_job(new_job_data=obj)
 
-        print(f"\n% loaded {len(saved_objects)-1} precedent pending jobs %")
-        print(f"% loaded settings: FOCUSED_TIME={FOCUSED_TIME} REST_TIME={REST_TIME}")
+        self.logger.info(f"loaded {len(saved_objects)-1} pending jobs")
+        self.logger.debug(f"loaded settings: FOCUSED_TIME={FOCUSED_TIME} REST_TIME={REST_TIME}")
 
     def save_pending(self):
 
@@ -730,12 +843,12 @@ class JobsManager(FloatLayout):
 
             ongoing += [job.data]
 
-            print("\nsaved job:\n", job.data)
+            self.logger.debug(f"saved job: {job.data}")
 
         # save
         settings = {"FOCUSED_TIME": FOCUSED_TIME, "REST_TIME": REST_TIME}
 
-        print("\nsaved settings: ", settings)
+        self.logger.debug(f"saving settings: {settings=}")
         self.cache.save_pending_objects(objects=ongoing, settings=settings)
 
 
@@ -795,7 +908,17 @@ class TaskObject(FloatLayout):
 
         self.update_position()
 
-        print(f"\n+Task created")
+        # logger
+        self.logger = logging.getLogger(f"Task-{self.name}")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
+        self.logger.info(f"created task")
 
     def set_score(self, value: float):
 
@@ -858,32 +981,53 @@ class TaskObject(FloatLayout):
 
     def set_rank(self, rank: int):
 
+        """
+        set the rank of the task
+
+        Parameters
+        ----------
+        rank : int
+        """
+
         self.rank = rank
 
     def start_task(self):
 
-        print(f'\nstarting "{self.name}" task')
+        self.logger.info(f"starting task")
 
     def edit_task(self):
 
-        print(f'\nediting "{self.name}" task')
+        self.logger.info(f"editing task")
 
     def change_image(self, flag=" "):
+
+        """
+        change the image of the task object
+
+        Parameters
+        ----------
+        flag : str
+            " " = default
+        """
 
         if flag == " ":
             self.job_icons_image.source = r"media/Job obj/job_icons.png"
 
         elif flag == "play":
             self.job_icons_image.source = r"media/Job obj/job_icons_play.png"
+            self.logger.info("play button pressed")
 
         elif flag == "delete":
             self.job_icons_image.source = r"media/Job obj/job_icons_delete.png"
+            self.logger.info("delete button pressed")
 
         elif flag == "done":
             self.job_icons_image.source = r"media/Job obj/job_icons_done.png"
+            self.logger.info("done button pressed")
 
         elif flag == "edit":
             self.job_icons_image.source = r"media/Job obj/job_icons_edit.png"
+            self.logger.info("edit button pressed")
 
 
 class FinishedTask(FloatLayout):
@@ -917,27 +1061,66 @@ class FinishedTask(FloatLayout):
         self.y_pos = y_pos
         self.pos_hint = {"x": 0.0, "top": y_pos}
 
-        print(f"\n+Finished Task created")
+        general_logger.info(f"created finished task")
 
     def set_rank(self, rank: int):
+
+        """
+        set the rank of the task
+
+        Parameters
+        ----------
+        rank : int
+        """
 
         self.rank = rank
 
     def update_position(self):
+
+        """
+        update the position of the task
+        """
 
         self.pos_hint = {"x": 0.0, "top": self.y_pos}
         self.rank_pos.text = str(self.rank)
 
     def update_priority(self, priority: int):
 
+        """
+        update the priority of the task
+
+        Parameters
+        ----------
+        priority : int
+            priority of the task
+        """
+
         self.priority = priority
 
     def set_score(self, value: float):
+
+        """
+        set the score of the task
+
+        Parameters
+        ----------
+        value : float
+            score of the task
+        """
 
         self.value = value
         self.score.text = str(self.value)
 
     def set_record(self, record: dict):
+
+        """
+        set the record of the task
+
+        Parameters
+        ----------
+        record : dict
+            record of the task
+        """
 
         self.data = record
 
@@ -953,9 +1136,18 @@ class FinishedTask(FloatLayout):
             )
         self.label.text = self.name
 
-        print(f'\n<finished task> "{self.name}" setting a record')
+        general_logger.info(f"finished task '{self.name}' setting a record")
 
     def change_image(self, flag=" "):
+
+        """
+        change the image of the task object
+
+        Parameters
+        ----------
+        flag : str
+            " " = default
+        """
 
         if flag == " ":
             self.job_icons_image.source = r"media/Finished obj/finished_task.png"
@@ -964,27 +1156,33 @@ class FinishedTask(FloatLayout):
             self.job_icons_image.source = (
                 r"media/Finished obj/finished_task_results.png"
             )
+            general_logger.info(f"finished task '{self.name}' result button pressed")
 
         elif flag == "delete":
             self.job_icons_image.source = r"media/Finished obj/finished_task_delete.png"
+            general_logger.info(f"finished task '{self.name}' delete button pressed")
 
 
 """ PROJECTS """
 
 
 class ProjectWindow(Screen):
+
     def on_enter(self, *args):
 
-        print("\n--------- Project Window ---------")
+        general_logger.info("ProjectWindow entered")
 
         self.projects_manager.app = App.get_running_app()
 
     def on_leave(self, *args):
 
+        general_logger.info("ProjectWindow left")
+
         pass
 
 
 class ProjectManager(FloatLayout):
+
     def __init__(self, **kwargs):
 
         super(ProjectManager, self).__init__(**kwargs)
@@ -1001,9 +1199,30 @@ class ProjectManager(FloatLayout):
 
         self.updated = False
 
+        # logger
+        self.logger = logging.getLogger(f"ProjectManager")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
+
     def load_project(self, project_data: dict):
 
-        """load data of the given project"""
+        """load data of the given project
+
+        Parameters
+        ----------
+        project_data : dict
+            the project data, as a dict
+
+        Returns
+        -------
+        None
+        """
 
         self.name = project_data["name"]
         self.completed_minitasks = project_data["completed_minitasks"]
@@ -1017,11 +1236,16 @@ class ProjectManager(FloatLayout):
 
         self.refresh()
 
-        print("\nloaded ", self.name, " rank ", self.project_rank)
+        self.logger.info(f"loaded {self.name} rank {self.project_rank}")
 
     def return_project_data(self):
 
-        """return the project data, possibly ready to be saved as json"""
+        """return the project data, possibly ready to be saved as json
+
+        Returns
+        -------
+        dict : the project data
+        """
 
         # every minitask as dict data
         current_minitasks_dict = [minitask.data for minitask in self.current_minitasks]
@@ -1033,25 +1257,27 @@ class ProjectManager(FloatLayout):
             "done": self.done,
         }
 
-        # print('\ndone: ', data['done'], f' [{self.done}] [{1 - self.updated}]')
-        # self.updated = False
-
-        print(
-            "\n#--> returning ",
-            self.name,
-            " rank ",
-            self.project_rank,
-            " done",
-            self.done,
-        )
+        self.logger.info(f"returning {self.name}, rank {self.project_rank}, done {self.done}")
 
         return data
 
     def add_minitask(self, data=None, title="New mini-Task"):
 
-        """handle the addition of a new task"""
+        """handle the addition of a new task
 
-        print("\n+adding minitask")
+        Parameters
+        ----------
+        data : dict, optional
+            the data of the new task, by default None
+        title : str, optional
+            the title of the new task, by default "New mini-Task"
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"adding minitask '{title}'")
 
         if data is None:
 
@@ -1069,7 +1295,20 @@ class ProjectManager(FloatLayout):
 
     def save_mini_task(self, new_mini_task_data: dict):
 
-        print("\nsaving minitask... ", end="")
+        """
+        save the new minitask data
+
+        Parameters
+        ----------
+        new_mini_task_data : dict
+            the new minitask data
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"adding minitask")
 
         rank = new_mini_task_data["rank"]
 
@@ -1103,19 +1342,26 @@ class ProjectManager(FloatLayout):
         # save mini task
         self.current_minitasks = new_list
 
-        print("+new minitask added!")
         self.updated = True
         self.refresh(sort=False)
 
     def edit_minitask(self, rank: int):
 
-        """edit minitask with the provided rank"""
+        """edit minitask with the provided rank
+
+        Parameters
+        ----------
+        rank : int
+            the rank of the minitask to edit
+
+        Returns
+        -------
+        None
+        """
 
         # get task
-        print("\ngiven rank ", rank, " total minitasks ", len(self.current_minitasks))
+        self.logger.info(f"editing minitask '{minitask.name}' - total minitasks {len(self.current_minitasks)}")
         minitask = self.current_minitasks[rank]
-
-        print(f'\nediting minitask "{minitask.name}"')
 
         # remove from current
         del self.current_minitasks[rank]
@@ -1125,9 +1371,19 @@ class ProjectManager(FloatLayout):
 
     def delete_minitask(self, rank: int):
 
-        """handle the deletion of an old task"""
+        """handle the deletion of an old task
 
-        print(f'\ndeleting minitask "{self.current_minitasks[rank].name}"')
+        Parameters
+        ----------
+        rank : int
+            the rank of the task to delete
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"deleting minitask '{self.current_minitasks[rank].name}'")
 
         del self.current_minitasks[rank]
 
@@ -1135,7 +1391,17 @@ class ProjectManager(FloatLayout):
 
     def completed_minitask(self, rank: int):
 
-        """definition of a "completed minitask" and substitution of the old minitask"""
+        """definition of a "completed minitask" and substitution of the old minitask
+
+        Parameters
+        ----------
+        rank : int
+            the rank of the minitask to complete
+
+        Returns
+        -------
+        None
+        """
 
         self.completed_minitasks += 1
 
@@ -1166,13 +1432,23 @@ class ProjectManager(FloatLayout):
 
         self.refresh()
 
-        print(f'\nminitask "{self.current_minitasks[rank].name}" completed')
+        self.logger.info(f'minitask "{self.current_minitasks[rank].name}" completed')
 
     def update_focus_minitask(self, focus_package: dict):
 
-        """update the minitask status after a focus session"""
+        """update the minitask status after a focus session
 
-        print("\ntask update: ", focus_package)
+        Parameters
+        ----------
+        focus_package : dict
+            the focus package
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.debug(f"updating minitask, package: {focus_package}")
 
         job = self.current_minitasks[focus_package["rank"]]
 
@@ -1191,7 +1467,6 @@ class ProjectManager(FloatLayout):
         # check if the task was completed
         if focus_package["done"]:
             self.completed_minitask(rank=focus_package["rank"])
-            print("complete!")
 
     def refresh(self, sort=True, *args):
 
@@ -1289,7 +1564,17 @@ class ProjectObject(FloatLayout):
 
         self.update_position()
 
-        print(f"\n+Project created")
+        # logger
+        self.logger = logging.getLogger(f"Project-{self.name}")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
+        self.logger.info(f"created project")
 
     def set_score(self, value: float):
 
@@ -1329,7 +1614,18 @@ class ProjectObject(FloatLayout):
 
     def update_project_data(self, updated_data: dict):
 
-        """update the owned project data from the project window"""
+        """update the owned project data from the project window
+
+        Parameters
+        ----------
+        updated_data : dict
+
+        Returns
+        -------
+        None
+        """
+
+        self.logger.info(f"updating project data")
 
         self.data["current_minitasks"] = updated_data["current_minitasks"]
         self.data["completed_minitasks"] = updated_data["completed_minitasks"]
@@ -1348,15 +1644,19 @@ class ProjectObject(FloatLayout):
 
         elif flag == "open":
             self.job_icons_image.source = r"media/Job obj/job_icons_prj_open.png"
+            self.logger.info(f"open button project")
 
         elif flag == "delete":
             self.job_icons_image.source = r"media/Job obj/job_icons_prj_delete.png"
+            self.logger.info(f"delete button project")
 
         elif flag == "done":
             self.job_icons_image.source = r"media/Job obj/job_icons_prj_done.png"
+            self.logger.info(f"done button project")
 
         elif flag == "edit":
             self.job_icons_image.source = r"media/Job obj/job_icons_prj_edit.png"
+            self.logger.info(f"edit button project")
 
 
 class FinishedProject(FloatLayout):
@@ -1386,29 +1686,65 @@ class FinishedProject(FloatLayout):
         self.y_pos = y_pos
         self.pos_hint = {"x": 0.0, "top": y_pos}
 
-        print(f"\n+Finished Project created, rank ", self.rank)
+        general_logger.info(f"created finished project '{self.name}'")
 
     def set_rank(self, rank: int):
 
+        """
+        set the rank of the project
+
+        Parameters
+        ----------
+        rank : int
+        """
+
         self.rank = rank
         self.data["rank"] = rank
-        print(f"\nFinished project new rank ", self.rank)
 
     def update_position(self):
+
+        """
+        update the position of the project
+        """
 
         self.pos_hint = {"x": 0.0, "top": self.y_pos}
         self.rank_pos.text = str(self.rank)
 
     def update_priority(self, priority: int):
 
+        """
+        update the priority of the project
+
+        Parameters
+        ----------
+        priority : int
+        """
+
         self.priority = priority
 
     def set_score(self, value: float):
+
+        """
+        set the score of the project
+
+        Parameters
+        ----------
+        value : float
+        """
 
         self.value = value
         self.score.text = str(self.value)
 
     def set_record(self, record: dict):
+
+        """
+        set the record of the project
+
+        Parameters
+        ----------
+        record : dict
+            record of the project
+        """
 
         self.data = record
 
@@ -1424,25 +1760,45 @@ class FinishedProject(FloatLayout):
             )
         self.label.text = self.name
 
-        print(
-            f'\n<finished project> "{self.name}" job setting a record with data ',
-            self.data,
-        )
+        general_logger.debug(f"finished project '{self.name}' setting a record")
 
     def change_image(self, flag=" "):
+
+        """
+        change the image of the project
+
+        Parameters
+        ----------
+        flag : str
+            flag to change the image
+        """
 
         if flag == " ":
             self.job_icons_image.source = r"media/Finished obj/finished_prj.png"
 
         elif flag == "results":
             self.job_icons_image.source = r"media/Finished obj/finished_prj_open.png"
+            general_logger(f"finished project '{self.name}' open button finished project")
 
         elif flag == "delete":
             self.job_icons_image.source = r"media/Finished obj/finished_prj_delete.png"
+            general_logger(f"finished project '{self.name}' delete button finished project")
 
 
 class MiniTask(FloatLayout):
+
     def __init__(self, y_pos: float, data: dict, **kwargs):
+
+        """
+        create a mini task
+
+        Parameters
+        ----------
+        y_pos : float
+            y position of the mini task
+        data : dict
+            data of the mini task
+        """
         super(MiniTask, self).__init__(**kwargs)
 
         # data
@@ -1475,10 +1831,24 @@ class MiniTask(FloatLayout):
         # location
         self.y_pos = y_pos
         self.pos_hint = {"x": 0.0, "top": y_pos}
+        
+        # logger
+        self.logger = logging.getLogger(f"MiniTask-{self.name}")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
 
-        print(f'\nMini-Task "{self.name}"created')
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
+        self.logger.info(f"created mini-task")
 
     def update_position(self):
+
+        """
+        update the position of the mini task
+        """
 
         # update position
         self.pos_hint = {"x": 0.0, "top": self.y_pos}
@@ -1487,7 +1857,10 @@ class MiniTask(FloatLayout):
 
         """
         compute the intervals as focus-rest-focus-rest... from the total task duration
-        :return: list
+
+        Returns
+        -------
+        dict : intervals, type, rank, next_window
         """
 
         # base focus length = 20, rest = 5
@@ -1501,23 +1874,45 @@ class MiniTask(FloatLayout):
 
     def set_rank(self, rank: int):
 
+        """
+        set the rank of the mini task
+
+        Parameters
+        ----------
+        rank : int
+        """
+
         self.rank = rank
         self.data["rank"] = rank
         self.rank_pos.text = f"{rank}"
 
     def start_task(self):
 
-        print(f'\nstarting "{self.name}" minitask')
+        self.logger.info(f"starting mini-task")
 
     def edit_task(self):
 
-        print(f'\nediting "{self.name}" minitask')
+        self.logger.info(f"editing mini-task")
 
     def get_data(self):
+
+        """
+        Returns
+        -------
+        dict : data of the mini task
+        """
 
         return self.data
 
     def change_image(self, flag=" "):
+
+        """
+        change the image of the mini task
+
+        Parameters
+        ----------
+        flag : str
+        """
 
         if flag == " ":
             self.minitask_icons_image.source = r"media/Mini task obj/minitask_icons.png"
@@ -1526,24 +1921,29 @@ class MiniTask(FloatLayout):
             self.minitask_icons_image.source = (
                 r"media/Mini task obj/minitask_icons_play.png"
             )
+            self.logger.info("play button pressed")
 
         elif flag == "delete":
             self.minitask_icons_image.source = (
                 r"media/Mini task obj/minitask_icons_delete.png"
             )
+            self.logger.info("delete button pressed")
 
         elif flag == "done":
             self.minitask_icons_image.source = (
                 r"media/Mini task obj/minitask_icons_done.png"
             )
+            self.logger.info("done button pressed")
 
         elif flag == "edit":
             self.minitask_icons_image.source = (
                 r"media/Mini task obj/minitask_icons_edit.png"
             )
+            self.logger.info("edit button pressed")
 
 
 class NewMiniTask(Screen):
+
     def __init__(self, **kwargs):
 
         super(NewMiniTask, self).__init__(**kwargs)
@@ -1552,17 +1952,36 @@ class NewMiniTask(Screen):
 
         self.app = ""
 
+        # logger
+        self.logger = logging.getLogger(f"NewMiniTask")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
     def on_enter(self, *args):
 
-        print("\n------- New Mini-Task Window -------")
+        self.logger.info("NewMiniTask window entered")
 
     def on_leave(self, *args):
 
         self.reset()
+        self.logger.info("NewMiniTask window left")
 
     def load_data(self, data: dict, title: str):
 
-        """load info about the new task to create"""
+        """load info about the new task to create
+
+        Parameters
+        ----------
+        data : dict
+            data of the task
+        title : str
+            title of the window
+        """
 
         self.data = data
 
@@ -1573,6 +1992,8 @@ class NewMiniTask(Screen):
         self.title.text = title
         self.app = App.get_running_app()
         self.data["validity"] = False
+
+        self.logger.debug(f"loaded data: {data}")
 
     def check(self):
 
@@ -1591,7 +2012,7 @@ class NewMiniTask(Screen):
             double_check += 1
 
         except ValueError:
-            print(f'\n!Error: "{self.duration.text}" is not a valid duration')
+            self.logger.error(f'"{self.duration.text}" is not a valid duration')
             self.duration.text = ""
             self.data["duration"] = 0
 
@@ -1604,15 +2025,15 @@ class NewMiniTask(Screen):
 
         # invalid
         except ValueError:
-            print(f'\n!Error: "{self.rank.text}" is not a valid rank')
+            self.logger.error(f'"{self.rank.text}" is not a valid rank')
             self.rank.text = ""
             self.data["rank"] = -1
 
         # grant validity
         if double_check == 2:
-
             # enable
             self.data["validity"] = True
+            self.logger.debug(f"task {self.data['name']} is valid")
 
         else:
 
@@ -1637,7 +2058,18 @@ class NewMiniTask(Screen):
         self.rank.text = ""
         self.duration.text = ""
 
+        self.logger.debug("cleared data")
+
     def submit(self, returning=False):
+
+        """
+        submit the task design
+
+        Parameters
+        ----------
+        returning : bool
+            if the task is being returned to the project window
+        """
 
         if returning:
             self.check()
@@ -1654,9 +2086,19 @@ class NewMiniTask(Screen):
 
             # reset
             self.reset()
+            self.logger.debug("task submitted")
             return
 
     def change_image(self, flag=" "):
+
+        """
+        change the image of the window
+
+        Parameters
+        ----------
+        flag : str
+            flag to change the image
+        """
 
         if flag == " ":
             self.newminitask_window_image.source = (
@@ -1667,21 +2109,25 @@ class NewMiniTask(Screen):
             self.newminitask_window_image.source = (
                 r"media/NewJob window/newjob_window_check.png"
             )
+            self.logger.info("check button pressed")
 
         elif flag == "clear":
             self.newminitask_window_image.source = (
                 r"media/NewJob window/newjob_window_clear.png"
             )
+            self.logger.info("clear button pressed")
 
         elif flag == "submit":
             self.newminitask_window_image.source = (
                 r"media/NewJob window/newjob_window_submit.png"
             )
+            self.logger.info("submit button pressed")
 
         elif flag == "return":
             self.newminitask_window_image.source = (
                 r"media/NewJob window/newjob_window_return.png"
             )
+            self.logger.info("return button pressed")
 
         else:
             warnings.warn(f"flag {flag} does not correspond to any newjob_window key")
@@ -1704,6 +2150,16 @@ class FinishedMiniTask(FloatLayout):
     """new task object, with buttons"""
 
     def __init__(self, y_pos: float, rank: int, **kwargs):
+
+        """
+        Parameters
+        ----------
+        y_pos : float
+            y position of the task
+        rank : int
+            rank of the task
+        """
+
         super(FinishedMiniTask, self).__init__(**kwargs)
 
         # data
@@ -1724,18 +2180,40 @@ class FinishedMiniTask(FloatLayout):
         self.y_pos = y_pos
         self.pos_hint = {"x": 0.0, "top": y_pos}
 
-        print(f'\nFinished MiniTask "{self.name}" created')
+        general_logger.info(f"Finished MiniTask created")
 
     def set_rank(self, rank: int):
+
+        """
+        set the rank of the task
+
+        Parameters
+        ----------
+        rank : int
+            rank of the task
+        """
 
         self.rank = rank
         self.rank_pos.text = f"{rank}"
 
     def update_position(self):
 
+        """
+        update the position of the task
+        """
+
         self.pos_hint = {"x": 0.0, "top": self.y_pos}
 
     def set_record(self, record: dict):
+
+        """
+        set the record of the task
+
+        Parameters
+        ----------
+        record : dict
+            record of the task
+        """
 
         self.data = record
 
@@ -1746,9 +2224,18 @@ class FinishedMiniTask(FloatLayout):
         # update description
         self.label.text = self.name
 
-        print(f'\n<finished minitask> "{self.name}" setting a record')
+        general_logger.info(f'Finished MiniTask "{self.name}" setting a record')
 
     def change_image(self, flag=" "):
+
+        """
+        change the image of the window
+
+        Parameters
+        ----------
+        flag : str
+            flag to change the image
+        """
 
         if flag == " ":
             self.job_icons_image.source = r"media/Finished obj/finished_minitask.png"
@@ -1757,17 +2244,20 @@ class FinishedMiniTask(FloatLayout):
             self.job_icons_image.source = (
                 r"media/Finished obj/finished_minitask_results.png"
             )
+            general_logger.info(f"finished mini-task '{self.name}' result button pressed")
 
         elif flag == "delete":
             self.job_icons_image.source = (
                 r"media/Finished obj/finished_minitask_delete.png"
             )
+            general_logger.info(f"finished mini-task '{self.name}' delete button pressed")
 
 
 """ SESSION """
 
 
 class IntervalHandler(Screen):
+
     def __init__(self, **kwargs):
 
         super(IntervalHandler, self).__init__(**kwargs)
@@ -1888,6 +2378,7 @@ class IntervalHandler(Screen):
 
 
 class NewSessionWindow(Screen):
+
     def __init__(self, **kwargs):
         super(NewSessionWindow, self).__init__(**kwargs)
 
@@ -2652,7 +3143,7 @@ class GeneralSettings(Screen):
 
     def on_enter(self, *args):
 
-        print("\n--------------------- New Session Settings ---------------------")
+        general_logger.info("GeneralSettings window entered")
 
         # self.app = App.get_running_app()
 
@@ -2663,6 +3154,8 @@ class GeneralSettings(Screen):
     def on_leave(self, *args):
 
         self.reset()
+
+        general_logger.info("GeneralSettings window left")
 
     def save(self):
 
@@ -2682,11 +3175,13 @@ class GeneralSettings(Screen):
             self.focused_time = int(self.focus_interval.text)
         except ValueError:
             validity -= 1
+            general_logger.error(f"Invalid input for focused time: {self.focus_interval.text}")
 
         try:
             self.rest_time = int(self.rest_interval.text)
         except ValueError:
             validity -= 1
+            general_logger.error(f"Invalid input for rest time: {self.rest_interval.text}")
 
         # valid inputs
         if validity == 2:
@@ -2696,6 +3191,7 @@ class GeneralSettings(Screen):
             REST_TIME = self.rest_time
 
             self.save_button.color = (0.1, 0.9, 0.1, 1)
+            general_logger.info(f"General settings saved: {FOCUSED_TIME} - {REST_TIME}")
 
         else:
             self.save_button.color = (0.3, 0.1, 0.1, 1)
@@ -3112,6 +3608,70 @@ class ExtraSimpleTimer(Screen):
         Window.size = (700, 500)
 
 
+""" STAR """
+
+class Routines(Screen):
+
+    """
+    Window in which the user can activate routines 
+    """
+
+    def __init__(self, **kwargs):
+        super(Routines, self).__init__(**kwargs)
+
+        self.minutes = 0.
+
+        # logger
+        self.logger = logging.getLogger("Routines")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
+    def on_enter(self, *args):
+
+        self.logger.info("Routines window entered")
+
+    def on_leave(self, *args):
+
+        self.logger.info("Routines window left")
+
+    def end_work_day(self):
+
+        """
+        timer to the end of the usual work day
+
+        Returns
+        -------
+        None
+        """
+
+        # get end time <-- edit for the config.json
+        end_time = (23, 15)  # time in hours and minutes
+
+        # calculate how many minutes are left from end_time 
+        now = datetime.datetime.now()
+        end = datetime.datetime(now.year, now.month, now.day, end_time[0], end_time[1])
+        delta = end - now
+
+        # convert to minutes 
+        minutes = delta.seconds // 60
+
+        # save in cache
+        cache_module_obj.save_timer_cache(timer_cache={'duration': minutes})
+
+        # start timer 
+        self.logger.info(f"end of work-day timer initiated - minutes: {minutes//60:02d}:{minutes%60:02d}")
+        os.system(f"./timer_window_run.sh")
+
+    def clean_cache(self):
+
+        cache_module_obj.delete_timer_cache()
+
+
 """ WINDOWS """
 
 
@@ -3123,9 +3683,19 @@ class ActivityWindow(Screen):
         self.clock = 0
         self.app = ""
 
+        # logger
+        self.logger = logging.getLogger("ActivityWindow")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
     def on_enter(self):
 
-        print("\n----------------------- Activity Window -----------------------")
+        self.logger.info("ActivityWindow entered")
         Window.size = (700, 500)
 
         self.app = App.get_running_app()
@@ -3139,25 +3709,33 @@ class ActivityWindow(Screen):
         except AttributeError:
             pass
 
+        self.logger.info("ActivityWindow left")
+
     def button_pressed(self, name: str):
 
         if name == "close":
             self.main_image.source = "media/main_screen/main_screen_close.png"
+            self.logger.info("close button pressed")
 
         elif name == "focus":
             self.main_image.source = "media/main_screen/main_screen_focus.png"
+            self.logger.info("focus button pressed")
 
         elif name == "schedule":
             self.main_image.source = "media/main_screen/main_screen_schedule.png"
+            self.logger.info("schedule button pressed")
 
         elif name == "settings":
             self.main_image.source = "media/main_screen/main_screen_settings.png"
+            self.logger.info("settings button pressed")
 
         elif name == "timer":
             self.main_image.source = "media/main_screen/main_screen_timer.png"
+            self.logger.info("timer button pressed")
 
         elif name == "star":
             self.main_image.source = "media/main_screen/main_screen_star.png"
+            self.logger.info("star button pressed")
 
     def button_released(self, name=""):
 
@@ -3190,7 +3768,6 @@ class ActivityWindow(Screen):
         None
         """
 
-        print('\n-timer button pressed')
         os.system(f"./timer_window_run.sh")
 
 
@@ -3211,9 +3788,19 @@ class ScheduleWindow(Screen):
 
         self.entered_count = 0
 
+        # logger
+        self.logger = logging.getLogger("ScheduleWindow")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
     def on_enter(self):
 
-        print("\n--------------------- Schedule Window ---------------------")
+        self.logger.info("ScheduleWindow entered")
 
         self.entered_count += 1
         self.app = App.get_running_app()
@@ -3224,6 +3811,10 @@ class ScheduleWindow(Screen):
             self.app.root.current_screen.jobs_manager.load_pending()
         
         self.clock = Clock.schedule_interval(self.ticking, 1)
+
+    def on_leave(self):
+
+        self.logger.info("ScheduleWindow left")
 
     def save_task(self):
 

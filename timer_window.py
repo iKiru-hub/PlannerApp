@@ -7,6 +7,7 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 
 import time
+import os
 import sys
 
 import cache_module
@@ -23,13 +24,60 @@ class SimpleTimerSetting(Screen):
         super(SimpleTimerSetting, self).__init__(**kwargs)
 
         self.duration = 0.0
-
         self.saved = False
         self.validity = False
 
     def on_enter(self, *args):
 
         print("\n--------------------- Simple Timer Setting ---------------------")
+
+        # print all attributes of the object
+        print('\n'.join('%s: %s' % item for item in vars(self).items()))
+        #self._automatic()
+
+    def bug1(self):
+
+        # print all attributes of the object
+        print()
+        print('\n'.join('%s: %s' % item for item in vars(self).items()))
+        print(self.__dict__.keys())
+
+    def _automatic(self):
+
+
+        # check presence of timer cache in the cache folder
+        if "timer.json" in os.listdir(cache_module.CACHE_PATH):
+
+            # retrieve time cache 
+            present, timer_cache = cache_module_obj.get_timer_cache()
+
+
+            if present:
+
+                # start the timer
+                try:
+                    self.timer_time.text = str(timer_cache['duration'])
+                except Exception as e:
+                    print(e)
+                    input('timer not started')
+                    #sys.exit('<timer aborted>')
+
+                # delete cache
+                try:
+                    cache_module_obj.delete_timer_cache()
+                except Exception as e:
+                    print(e)
+                    input('cache not deleted')
+                    sys.exit('<timer aborted>')
+            
+            else:
+                print("\n!Error: invalid timer cache")
+                input('not present')
+                sys.exit("<timer aborted>")
+
+        else:
+            print('\n<normal timer>')
+            input()
 
     def on_leave(self, *args):
 
@@ -53,7 +101,7 @@ class SimpleTimerSetting(Screen):
             self.start_button.color = (0.1, 0.9, 0.1, 1)
 
             # save data and build intervals
-            self.save()
+            self._save()
 
         except ValueError:
             print(f'\n!Error: "{self.timer_time.text}" is not an integer')
@@ -62,7 +110,7 @@ class SimpleTimerSetting(Screen):
             self.validity = False
             self.start_button.color = (0.9, 0.1, 0.1, 1)
 
-    def save(self):
+    def _save(self):
 
         """
         save and jump to the session
@@ -79,9 +127,9 @@ class SimpleTimerSetting(Screen):
         self.saved = True
 
         # save cache
-        cache_module_obj.save_timer_cache(timer_cache={"duration": self.duration})
+        #cache_module_obj.save_timer_cache(timer_cache={"duration": self.duration})
 
-        time.sleep(0.5)
+        #time.sleep(0.5)
 
     def get_duration(self):
 
@@ -123,9 +171,9 @@ class SimpleTimer(Screen):
 
         print("\n--------- Focus Timer Window ---------")
 
-        self._load_duration()
+        #self.load_duration()
 
-    def _load_duration(self):
+    def load_duration(self, duration: int):
 
         """
         load the interval
@@ -136,17 +184,17 @@ class SimpleTimer(Screen):
         """
 
         # retrieve time cache 
-        present, timer_cache = cache_module_obj.get_timer_cache()
+        #present, timer_cache = cache_module_obj.get_timer_cache()
 
-        if not present:
-            print("\n!Error: timer cache not found")
-            sys.exit("<timer aborted>")
+        #if not present:
+        #    print("\n!Error: timer cache not found")
+        #    sys.exit("<timer aborted>")
 
         # delete cache
         #cache_module_obj.delete_timer_cache()
 
         # define timer data
-        duration = timer_cache['duration']
+        #duration = timer_cache['duration']
         ongoing = True  # <--------------------------- ugly
         self.tot_duration = duration * 60
         self.checkpoint = duration * 60

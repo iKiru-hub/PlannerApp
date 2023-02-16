@@ -119,7 +119,6 @@ class CacheInterface:
 
         # check if timer cache is there
         if self.timer_filename not in os.listdir(path=CACHE_PATH):
-            print(f'\n<!no timer cache found>')
             return False, {}
 
         # load
@@ -127,7 +126,6 @@ class CacheInterface:
 
             timer_cache = json.loads(f.read())
 
-        print(f'\n<timer cache found>\n', timer_cache)
         return True, timer_cache
 
     def delete_timer_cache(self):

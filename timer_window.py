@@ -7,14 +7,22 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 
 import time
-import os
 import sys
+import coloredlogs, logging
 
 import cache_module
 
 
 # cache module 
 cache_module_obj = cache_module.CacheInterface()
+
+# general logger
+general_logger = logging.getLogger(f"Timer")
+general_logger.setLevel(logging.DEBUG)
+stdout = logging.StreamHandler(stream=sys.stdout)
+fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+stdout.setFormatter(fmt)
+general_logger.addHandler(stdout)
 
 
 class SimpleTimerSetting(Screen):
@@ -24,64 +32,19 @@ class SimpleTimerSetting(Screen):
         super(SimpleTimerSetting, self).__init__(**kwargs)
 
         self.duration = 0.0
+
         self.saved = False
         self.validity = False
 
     def on_enter(self, *args):
 
-        print("\n--------------------- Simple Timer Setting ---------------------")
-
-        # print all attributes of the object
-        print('\n'.join('%s: %s' % item for item in vars(self).items()))
-        #self._automatic()
-
-    def bug1(self):
-
-        # print all attributes of the object
-        print()
-        print('\n'.join('%s: %s' % item for item in vars(self).items()))
-        print(self.__dict__.keys())
-
-    def _automatic(self):
-
-
-        # check presence of timer cache in the cache folder
-        if "timer.json" in os.listdir(cache_module.CACHE_PATH):
-
-            # retrieve time cache 
-            present, timer_cache = cache_module_obj.get_timer_cache()
-
-
-            if present:
-
-                # start the timer
-                try:
-                    self.timer_time.text = str(timer_cache['duration'])
-                except Exception as e:
-                    print(e)
-                    input('timer not started')
-                    #sys.exit('<timer aborted>')
-
-                # delete cache
-                try:
-                    cache_module_obj.delete_timer_cache()
-                except Exception as e:
-                    print(e)
-                    input('cache not deleted')
-                    sys.exit('<timer aborted>')
-            
-            else:
-                print("\n!Error: invalid timer cache")
-                input('not present')
-                sys.exit("<timer aborted>")
-
-        else:
-            print('\n<normal timer>')
-            input()
+        general_logger.info("Simple Timer Setting Window entered")
 
     def on_leave(self, *args):
 
         self.reset()
+        
+        general_logger.info("Simple Timer Setting Window left")
 
     def reset(self, *args):
 
@@ -101,16 +64,18 @@ class SimpleTimerSetting(Screen):
             self.start_button.color = (0.1, 0.9, 0.1, 1)
 
             # save data and build intervals
-            self._save()
+            self.save()
+            
+            general_logger.debug(f"valid timer time: {self.timer_time.text}")
 
         except ValueError:
-            print(f'\n!Error: "{self.timer_time.text}" is not an integer')
+            general_logger.error(f'"{self.timer_time.text}" is not an integer')
 
             self.timer_time.text = ""
             self.validity = False
             self.start_button.color = (0.9, 0.1, 0.1, 1)
 
-    def _save(self):
+    def save(self):
 
         """
         save and jump to the session
@@ -122,14 +87,14 @@ class SimpleTimerSetting(Screen):
 
         self.duration = int(self.timer_time.text)
 
-        print("\nsession settings saved:\n", self.duration)
+        general_logger.info(f"timer settings saved: {self.duration}")
 
         self.saved = True
 
         # save cache
-        #cache_module_obj.save_timer_cache(timer_cache={"duration": self.duration})
+        cache_module_obj.save_timer_cache(timer_cache={"duration": self.duration})
 
-        #time.sleep(0.5)
+        time.sleep(0.5)
 
     def get_duration(self):
 
@@ -137,10 +102,20 @@ class SimpleTimerSetting(Screen):
 
     def change_image(self, pressed=False):
 
+        """
+        change the image after pressing the exit button
+
+        Parameters
+        ----------
+        pressed : bool, optional
+            if the button is pressed, by default False
+        """
+
         if pressed:
             self.timer_setting_image.source = (
                 r"media/Timer window/timer_settings_return.png"
             )
+            general_logger.debug("exit button pressed")
 
         else:
             self.timer_setting_image.source = r"media/Timer window/timer_settings.png"
@@ -169,11 +144,21 @@ class SimpleTimer(Screen):
 
     def on_enter(self, *args):
 
-        print("\n--------- Focus Timer Window ---------")
+        general_logger.info("Simple Timer Window entered")
+        
+        # check if "dislay" is an attribute
+        if not hasattr(self, "display"):
+            general_logger.debug("'on_enter': display attribute not found")
+        else:
+            general_logger.debug("'on_enter': display attribute found")
+        
+        self._load_duration()
 
-        #self.load_duration()
+    def on_leave(self, *args):
 
-    def load_duration(self, duration: int):
+        general_logger.info("Simple Timer Window left")
+
+    def _load_duration(self):
 
         """
         load the interval
@@ -184,17 +169,22 @@ class SimpleTimer(Screen):
         """
 
         # retrieve time cache 
-        #present, timer_cache = cache_module_obj.get_timer_cache()
+        present, timer_cache = cache_module_obj.get_timer_cache()
 
-        #if not present:
-        #    print("\n!Error: timer cache not found")
-        #    sys.exit("<timer aborted>")
+        if not present:
+            general_logger.error("timer cache not found")
+            sys.exit("<timer aborted>")
 
         # delete cache
         #cache_module_obj.delete_timer_cache()
+        # check if "dislay" is an attribute
+        if not hasattr(self, "display"):
+            general_logger.debug("'load duration': display attribute not found")
+        else:
+            general_logger.debug("'load duration': display attribute found")
 
         # define timer data
-        #duration = timer_cache['duration']
+        duration = timer_cache['duration']
         ongoing = True  # <--------------------------- ugly
         self.tot_duration = duration * 60
         self.checkpoint = duration * 60
@@ -205,7 +195,7 @@ class SimpleTimer(Screen):
 
         if ongoing:
 
-            print("\ntimer ongoing")
+            general_logger.debug("timer ongoing")
 
             # start clock
             self.start_time = time.time()
@@ -218,7 +208,7 @@ class SimpleTimer(Screen):
             # self.play_pause_icon.source = "media/pause_iconG.png"
 
         else:
-            print("\nfocus waiting to start")
+            general_logger.debug("timer paused")
 
             # new state
             self.state = "paused"
@@ -226,19 +216,21 @@ class SimpleTimer(Screen):
             # change button name to pause
             # self.play_pause_icon.source = "media/play_iconG.png"
 
-        print(
-            "\n% timer interval loaded: ",
+        general_logger.debug(
+            "timer interval loaded: %s [%ss] %s",
             self.current_time,
-            f" [{duration*60}s] % ",
+            duration * 60,
             self.state,
         )
 
     def update(self):
 
+        """ Update timer status """
+
         # finished + play button: start
         if self.state == "paused":
 
-            print("\nfocus #play")
+            general_logger.debug("timer started")
 
             # start clock
             self.start_time = time.time()
@@ -253,7 +245,7 @@ class SimpleTimer(Screen):
         # running + pause button : pause
         elif self.state == "running":
 
-            print("\nfocus #pause")
+            general_logger.debug("timer paused")
 
             # stop clock
             self.job.cancel()
@@ -271,6 +263,8 @@ class SimpleTimer(Screen):
             self.tracking()
 
     def ticking(self, *args):
+
+        """ Update timer """
 
         elapsed = int(self.checkpoint - (time.time() - self.start_time))
         self.current_time[1] = int(elapsed % 60)
@@ -296,17 +290,21 @@ class SimpleTimer(Screen):
 
     def tracking(self):
 
+        """ Track time """
+
         self.duration = int(time.time() - self.start_time)
 
         # control for absurd time difference, usually when the timer isn't event started
         if self.duration > 24 * 60 * 60:
             self.duration = 0
 
-        print("tracked: ", self.duration, "s")
+        general_logger.info(f"tracked: {self.duration} s")
 
     def close(self):
 
-        print("\ntimer #close")
+        """ Close timer """
+
+        general_logger.info("quitting timer")
 
         # cancel
         try:
@@ -328,7 +326,7 @@ class SimpleTimer(Screen):
 
         """reset to the original values"""
 
-        print("\nfocus #reset ", self.state)
+        general_logger.info("resetting timer")
 
         # cancel
         self.job.cancel()
@@ -350,38 +348,51 @@ class SimpleTimer(Screen):
 
     def quit(self):
 
-        print("\ntimer #quit")
-
         # cancel
         try:
             self.job.cancel()
         except AttributeError:
             pass
 
-
     def change_image(self, flag="", pressed=False):
 
-        print("state ", self.state, " pressed: ", pressed)
+        """
+        change the image of the timer window
+
+        Parameters
+        ----------
+        flag : str
+            the flag of the button pressed
+        pressed : bool
+            True if the button is pressed, False otherwise
+        """
+
+        #### edit 
 
         # running -> stopped
         if flag == "" and self.state == "running" and not pressed:
             self.timer_image.source = r"media/Timer window/timer_nogo.png"
+            general_logger.info("timer ticking")
 
         # pressed running -> stopped
         elif flag == "" and self.state == "running" and pressed:
             self.timer_image.source = r"media/Timer window/timer_go_stop.png"
+            general_logger.info("pause button pressed")
 
         # stopped -> running
         elif flag == "" and self.state == "paused" and not pressed:
             self.timer_image.source = r"media/Timer window/timer_go.png"
+            general_logger.info("timer stopped")
 
         # pressed stopped -> running
         elif flag == "" and self.state == "paused" and pressed:
             self.timer_image.source = r"media/Timer window/timer_nogo_play.png"
+            general_logger.info("play button pressed")
 
         # pressed running reset
         elif flag == "reset" and self.state == "running":
             self.timer_image.source = r"media/Timer window/timer_go_reset.png"
+            
 
         # pressed running return
         elif flag == "return" and self.state == "running":
@@ -411,13 +422,13 @@ class ExtraSimpleTimer(Screen):
 
     def on_enter(self, *args):
 
-        print("\n--------- Extra Simple Timer Window ---------")
+        general_logger.info("Extra Simple Timer Window entered")
 
         self.app = App.get_running_app()
 
     def close(self):
 
-        print("\nsimple timer #close")
+        general_logger.info("Extra Simple Timer Window closed")
 
         # cancel
         try:

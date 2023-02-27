@@ -13,7 +13,7 @@ import time
 import datetime
 import sys
 import os
-import logging
+import coloredlogs, logging
 
 # app utils 
 import cache_module
@@ -3713,6 +3713,13 @@ class ActivityWindow(Screen):
 
     def button_pressed(self, name: str):
 
+        """
+        Parameters
+        ----------
+        name: str
+            name of the pressed button
+        """
+
         if name == "close":
             self.main_image.source = "media/main_screen/main_screen_close.png"
             self.logger.info("close button pressed")
@@ -3737,13 +3744,36 @@ class ActivityWindow(Screen):
             self.main_image.source = "media/main_screen/main_screen_star.png"
             self.logger.info("star button pressed")
 
+        elif name == "clock":
+            self.logger.info("clock button pressed")
+
     def button_released(self, name=""):
+
+        """ 
+        Parameters
+        ----------
+        name: str   
+            name of the released button
+        """
+
+        self.logger.info(f"button {name} released")
 
         self.main_image.source = r"media/Activity window/activity_window.png"
 
-        #if name == "timer":
-        #    Window.size = (250, 200)
-        pass
+        if name == "timer":
+            if cache_module.OS:  # unix
+                #os.system(f"./timer_window_run.sh")
+                os.system(f"tmux split-window -h 'python timer_window.py'")
+                self.logger.info("timer window opened")
+            else:
+                self.logger.error("windows not supported yet")
+
+        elif name == "clock":
+            if cache_module.OS:  # unix
+                os.system(f"tmux split-window -h 'python clock_window.py'")
+                self.logger.info("clock window opened")
+            else:
+                self.logger.error("windows not supported yet")
 
     def ticking(self, *args):
 
@@ -3757,18 +3787,6 @@ class ActivityWindow(Screen):
 
         now = time.localtime()
         self.clock_display.text = f"{now.tm_hour:02d}:{now.tm_min:02d}"
-
-    def timer_button_pressed(self):
-
-        """
-        timer button pressed, open timer window
-
-        Returns
-        -------
-        None
-        """
-
-        os.system(f"./timer_window_run.sh")
 
 
 class ScheduleWindow(Screen):

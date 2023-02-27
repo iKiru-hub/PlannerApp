@@ -64,7 +64,7 @@ WindowManager:
                 root.check_inputs()
                 if root.saved: app.root.current = "simple_timer"
                 if root.saved: app.root.transition.direction = "left"
-                if root.saved: app.root.current_screen.load_duration(root.get_duration())
+                #if root.saved: app.root.current_screen.load_duration()
 
         # quit
         Button:
@@ -75,17 +75,10 @@ WindowManager:
                 root.change_image(pressed=True)
 
             on_release:
-                app.stop()
-
-            background_color: 0.7, 0.8, 1, 0
-
-        # log button 
-        Button:
-            pos_hint: {"x": 0.5, "y": 0.13}
-            size_hint: 0.115, 0.14
-
-            on_release:
-                root.bug1()
+                root.change_image()
+                root.quit()
+                app.root.current = "activity_window"
+                app.root.transition.direction = "right"
 
             background_color: 0.7, 0.8, 1, 0
 

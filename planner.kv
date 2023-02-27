@@ -15,7 +15,6 @@ WindowManager:
     NewJob:
     ProjectWindow:
     NewMiniTask:
-    Routines:
 
 
 <ActivityWindow>:
@@ -26,8 +25,8 @@ WindowManager:
     schedule_button: schedule_button
     settings_button: settings_button
     timer_button: timer_button
-    star_button: star_button
     clock_display: clock_display
+    clock_button: clock_button
 
     FloatLayout:
 
@@ -66,6 +65,7 @@ WindowManager:
                 app.root.current_screen.reset()
                 root.manager.transition.direction = "left"
 
+
         # close
         Button:
             id: close_button
@@ -78,6 +78,7 @@ WindowManager:
             on_release:
                 root.button_released()
                 app.stop()
+
 
         # settings
         Button:
@@ -105,14 +106,10 @@ WindowManager:
 
             on_release:
                 root.button_released(name='timer')
-                #app.root.current = "simple_timer_setting"
-                #root.manager.transition.direction = "left"
-                root.timer_button_pressed()
-
 
         # star routine
         Button:
-            id: star_button
+            id: timer_button
             size_hint: 0.09, 0.115
             pos_hint: {"x": 0.4, "y": 0.84}
 
@@ -121,8 +118,6 @@ WindowManager:
 
             on_release:
                 root.button_released()
-                app.root.current = "routines"
-                root.manager.transition.direction = "left"
 
         Image:
             id: main_image
@@ -130,7 +125,19 @@ WindowManager:
             allow_stretch: True
             keep_ratio: True
         
-        # clock 
+        # clock label and button 
+        Button:
+            id: clock_button
+            size_hint: 0.2, 0.1
+            pos_hint: {"x": 0.13, "y": 0.84}
+            color: 0.3, 0.3, 0.3, 0.7
+
+            on_press:
+                root.button_pressed(name='clock')
+
+            on_release:
+                root.button_released(name='clock')
+
         Label:
             id: clock_display
             text: "00:00"
@@ -139,7 +146,6 @@ WindowManager:
             bold: True
             font_size: 55
             
-
 <ScheduleWindow>:
 
     name: "schedule_window"
@@ -1794,6 +1800,7 @@ WindowManager:
             font_size: 29
             color: 0.2, 0.2, 0.2, 1
 
+
         BoxLayout:
 
             orientation: 'vertical'
@@ -2071,81 +2078,4 @@ WindowManager:
 	        on_press:
 				root.close()
 
-# ROUTINES #
 
-<Routines>:
-
-    name: "routines"
-    routines_image: routines_image
-
-    FloatLayout:
-
-        canvas.before:
-            Color:
-                rgba: 0.8, 0.8, 0., 0.9
-            Rectangle:
-                pos: self.pos
-                size: self.size
-
-        Image:
-            id: routines_image
-
-            allow_stretch: True
-            keep_ratio: True
-
-        Label:
-            text: "Routines"
-            pos_hint: {"x": 0., "top": 1.4}
-            bold: True
-            font_size: 29
-            color: 0.2, 0.2, 0.2, 1
-
-        # routines
-        GridLayout:
-            cols: 2
-            pos_hint: {"x": 0.1, "y": 0.55}
-            size_hint: 0.8, 0.1
-
-            Label:
-                text: "Routine 1"
-                color: 0.25, 0.25, 0.25, 1
-                font_size: 17
-
-            # buttons for the routine
-            GridLayout:
-                cols: 3
-                spacing: 10
-
-                Button:
-                    text: "clean"
-                    font_size: 17
-                    background_color: (0.2, 0.2, 0.7, 0.3)
-                    color: 0.1, 0.1, 0.1, 1
-
-                    on_release:
-                        root.clean_cache()
-
-                Button:
-                    text: "edit"
-                    font_size: 17
-                    background_color: (0.2, 0.2, 0.7, 0.3)
-                    color: 0.1, 0.1, 0.1, 1
-
-                Button:
-                    text: "start"
-                    font_size: 17
-                    background_color: (0.2, 0.2, 0.7, 0.3)
-                    color: 0.1, 0.1, 0.1, 1
-
-                    on_release:
-                        root.end_work_day()
-                        
-
-        # return
-        Button:
-            pos_hint: {"x": 0.91, "y": 0.04}
-            size_hint: 0.06, 0.08
-
-            on_release:
-                app.root.current = "activity_window"
-                app.root.transition.direction = "right"

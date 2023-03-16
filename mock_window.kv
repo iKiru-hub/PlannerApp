@@ -1,0 +1,42 @@
+WindowManager:
+    SimpleTimerSetting:
+
+
+# SIMPLE TIMER #
+
+<SimpleTimerSetting>:
+
+    name: "simple_timer_setting"
+
+    display: display
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.8, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            id: display
+            text: "Timer"
+            font_size: 37
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1.4}
+
+        # quit
+        Button:
+            pos_hint: {"x": 0.7, "y": 0.13}
+            size_hint: 0.115, 0.14
+
+            on_press:
+                root.change_image(pressed=True)
+
+            on_release:
+                root.quit()
+                app.stop()
+
+            background_color: 0.7, 0.8, 1, 0
+

@@ -8,12 +8,12 @@ from kivy.clock import Clock
 
 from kivy.lang import Builder
 
-from numpy import array, exp
+from numpy import array
 import time
 import datetime
 import sys
 import os
-import coloredlogs, logging
+import logging
 
 # app utils 
 import cache_module
@@ -34,7 +34,7 @@ IS_DEADLINE = False
 cache_module_obj = cache_module.CacheInterface()
 
 # general logger
-general_logger = logging.getLogger(f"General")
+general_logger = logging.getLogger(f"MainLogs")
 general_logger.setLevel(logging.DEBUG)
 stdout = logging.StreamHandler(stream=sys.stdout)
 fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
@@ -513,7 +513,6 @@ class JobsManager(FloatLayout):
 
         # get priorities list
         priorities = [int(job.priority) for job in self.current_jobs]
-        #exp_sum = sum([exp(x) for x in priorities])
 
         # define score #
         # sort by deadline from small to large
@@ -537,7 +536,6 @@ class JobsManager(FloatLayout):
                     #    * (int(job.priority) - min(priorities))
                     #    / (max(priorities) - min(priorities))
                     #)
-                    #new_priority = round(exp(job.priority) / exp_sum, 2)
                     new_priority = job.priority
                 except ZeroDivisionError:
                     # print('\n--same priorities: ', priorities)
@@ -3644,6 +3642,69 @@ class Routines(Screen):
         """
         timer to the end of the usual work day
 
+        Returns
+        -------
+        None
+        """
+
+        # get end time <-- edit for the config.json
+        end_time = (23, 15)  # time in hours and minutes
+
+        # calculate how many minutes are left from end_time 
+        now = datetime.datetime.now()
+        end = datetime.datetime(now.year, now.month, now.day, end_time[0], end_time[1])
+        delta = end - now
+
+        # convert to minutes 
+        minutes = delta.seconds // 60
+
+        # save in cache
+        cache_module_obj.save_timer_cache(timer_cache={'duration': minutes,
+                                                       'direct': True})
+
+        # start timer 
+        self.logger.info(f"end of work-day timer initiated - {minutes//60:02d}h {minutes%60:02d}m")
+        os.system(f"./timer_window_run.sh")
+
+    def clean_cache(self):
+
+        cache_module_obj.delete_timer_cache()
+
+""" STAR """
+
+class RoutineWindow(Screen):
+
+    """
+    Window in which the user can activate routines 
+    """
+
+    def __init__(self, **kwargs):
+        super(RoutineWindow, self).__init__(**kwargs)
+
+        self.minutes = 0.
+
+        # logger
+        self.logger = logging.getLogger("Routines")
+        self.logger.setLevel(logging.DEBUG)
+        stdout = logging.StreamHandler(stream=sys.stdout)
+
+        fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+
+        stdout.setFormatter(fmt)
+        self.logger.addHandler(stdout)
+
+    def on_enter(self, *args):
+
+        self.logger.info("Routines window entered")
+
+    def on_leave(self, *args):
+
+        self.logger.info("Routines window left")
+
+    def end_work_day(self):
+
+        """
+        timer to the end of the usual work day
         Returns
         -------
         None

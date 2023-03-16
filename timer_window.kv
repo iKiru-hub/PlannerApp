@@ -13,6 +13,7 @@ WindowManager:
     timer_time: timer_time
     start_button: start_button
     timer_setting_image: timer_setting_image
+    display: display
 
     FloatLayout:
 
@@ -28,6 +29,13 @@ WindowManager:
             source: r"media/Timer window/timer_settings.png"
             allow_stretch: True
             keep_ratio: True
+
+        Label:
+            id: display
+            text: "ClockTimer"
+            font_size: 37
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1.4}
 
         GridLayout:
             cols: 2
@@ -55,9 +63,9 @@ WindowManager:
             id: start_button
             text: "start"
             font_size: 21
-            pos_hint: {"x": 0.26, "y": 0.25}
-            size_hint: 0.3, 0.2
-            background_color: (0.2, 0.2, 0.7, 0.3)
+            pos_hint: {"x": 0.26, "y": 0.3}
+            size_hint: 0.3, 0.15
+            background_color: (0.2, 0.2, 0.7, 0.2)
             color: 0.1, 0.1, 0.1, 1
 
             on_press:
@@ -66,9 +74,21 @@ WindowManager:
                 if root.saved: app.root.transition.direction = "left"
                 #if root.saved: app.root.current_screen.load_duration()
 
+        # start
+        Button:
+            id: load_button
+            text: "load"
+            font_size: 21
+            pos_hint: {"x": 0.35, "y": 0.13}
+            size_hint: 0.115, 0.14
+            background_color: (0.2, 0.2, 0.9, 0.)
+            color: 0.1, 0.1, 0.4, 1
+
+            on_press:
+                root._load_duration()
         # quit
         Button:
-            pos_hint: {"x": 0.7, "y": 0.13}
+            pos_hint: {"x": 0.7, "y": 0.15}
             size_hint: 0.115, 0.14
 
             on_press:
@@ -172,9 +192,9 @@ WindowManager:
         Button:
             size_hint: 1, 1
             pos_hint: {"x": 0., "y": 0.}
-		    background_color: 0.4, 0.4, 0.4, 0.
+		    background_color: 0.4, 0.4, 0.4, 0.0
  
 	        on_press:
-				root.close()
+				app.stop()
 
 

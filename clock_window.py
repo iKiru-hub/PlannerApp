@@ -19,15 +19,14 @@ stdout.setFormatter(fmt)
 general_logger.addHandler(stdout)
 
 
-class ClockWindow(Screen):
+class ClockObj(Screen):
 
     def __init__(self, **kwargs):
 
-        super(ClockWindow, self).__init__(**kwargs)
+        super(ClockObj, self).__init__(**kwargs)
 
         self.start_time = time.time()
         self.job = 0
-        self.app = App.get_running_app()
 
     def on_enter(self, *args):
 
@@ -54,10 +53,15 @@ class ClockWindow(Screen):
             general_logger.debug("'initialize': display attribute exists")
         else:
             general_logger.error("'initialize': display attribute does not exist")
+            #time.sleep(2)
+            #sys.exit(1)
 
+        self.app = App.get_running_app()
+        general_logger.debug(f"app: {self.app}")
+
+        # app
         self.start_time = time.time()
         self.job = Clock.schedule_interval(self.update_clock, 1)
-        input()
         self.update_clock()
         general_logger.debug(f"current time is: {time.localtime()}")
         general_logger.debug(f"clock display: {self.display}")

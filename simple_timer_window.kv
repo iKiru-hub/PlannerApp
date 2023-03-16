@@ -1,0 +1,100 @@
+WindowManager:
+    SimpleTimer:
+    ExtraSimpleTimer:
+
+<SimpleTimer>:
+
+    name: "simple_timer"
+
+    display: display
+    play_pause: play_pause
+    #play_pause_icon: play_pause_icon
+    timer_image: timer_image
+
+    FloatLayout:
+
+        canvas.before:
+            Color:
+                rgba: 0.4, 0.9, 0.4, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            id: timer_image
+            source: r"media/Timer window/timer_go.png"
+            allow_stretch: True
+            keep_ratio: True
+
+        # timer display
+        Label:
+            id: display
+            text: "00:10"
+            font_size: 70
+            color: 0.1, 0.1, 0.1, 1
+            pos_hint: {"x": 0., "top": 1.1}
+
+        # buttons
+        BoxLayout:
+
+            orientation: "horizontal"
+            pos_hint: {"x": 0.22, "y": 0.12}
+            size_hint: 0.6, 0.16
+            spacing: 20
+
+            # play pause
+            Button:
+                id: play_pause
+                on_press:
+                    root.change_image(pressed=True)
+                on_release:
+                    root.change_image()
+                    root.update()
+
+                background_color: 0.7, 0.8, 1, 0
+
+            # reset
+            Button:
+                on_press:
+                    root.change_image(flag='reset')
+
+                on_release:
+                    root.reset()
+                    root.change_image(flag='void')
+
+                background_color: 0.7, 0.8, 1, 0
+
+            # return
+            Button:
+                on_press:
+                    root.change_image(flag='return')
+
+                on_release:
+                    root.change_image(flag='void')
+                    app.root.current = "simple_timer_setting"
+                    root.manager.transition.direction = "left"
+
+                background_color: 0.7, 0.8, 1, 0
+
+<ExtraSimpleTimer>:
+
+    name: "extra_simple_timer"
+    background_color: 0.3, 0.3, 0.9, 1	
+
+    FloatLayout:
+
+        Image:
+            source: r"media/meme_gif/overtime.gif"
+			allow_stretch: True
+
+		#  next   # <--- show button on the window
+        Button:
+            size_hint: 1, 1
+            pos_hint: {"x": 0., "y": 0.}
+		    background_color: 0.4, 0.4, 0.4, 0.0
+ 
+	        on_press:
+				app.stop()
+
+
+

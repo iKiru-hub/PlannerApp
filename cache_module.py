@@ -1,7 +1,7 @@
 import os
 import json
 import sys 
-
+import logging
 
 
 # adjust path to the operating system
@@ -11,6 +11,14 @@ if sys.platform == 'win32':
 else:
     split = '/'
     OS = 1
+
+# general logger
+logger = logging.getLogger(f"CacheLogs")
+logger.setLevel(logging.DEBUG)
+stdout = logging.StreamHandler(stream=sys.stdout)
+fmt = logging.Formatter("%(name)s: %(asctime)s | %(levelname)s | %(message)s")
+stdout.setFormatter(fmt)
+logger.addHandler(stdout)
 
 
 # get the path of the app
@@ -50,11 +58,11 @@ class CacheInterface:
 
                 pending_list = json.loads(f.read())
 
-            print(f'\n<{len(list(pending_list.keys()))} job objects found>\n', pending_list)
+            logger.info(f'{len(list(pending_list.keys()))} job objects found')
             return True, pending_list
 
         # no file found
-        print('\n!oh no, no file found in cache!')
+        logger.warning(f'no file found in cache')
         return False, {}
 
     def save_pending_objects(self, objects: list, settings: dict):
@@ -83,7 +91,7 @@ class CacheInterface:
         with open(f"{CACHE_PATH}{split}{self.pending_filename}", 'w') as f:
             f.write(json.dumps(pending_list))
 
-        print(f'\n<{len(objects)} job objects successfully saved>')
+        logger.info(f'{len(objects)} job objects successfully saved')
 
     def save_timer_cache(self, timer_cache: dict):
 
@@ -103,7 +111,7 @@ class CacheInterface:
         with open(f"{CACHE_PATH}{split}{self.timer_filename}", 'w') as f:
             f.write(json.dumps(timer_cache))
 
-        print(f'\n<timer cache successfully saved>')
+        logger.info(f'timer cache successfully saved')
 
     def get_timer_cache(self):
 
@@ -121,7 +129,7 @@ class CacheInterface:
 
         # check if timer cache is there
         if self.timer_filename not in os.listdir(path=CACHE_PATH):
-            print(f'\n<!no timer cache found>')
+            logger.warning(f'no timer cache found')
             return False, {}
 
         # load
@@ -129,7 +137,7 @@ class CacheInterface:
 
             timer_cache = json.loads(f.read())
 
-        print(f'\n<timer cache found>\n', timer_cache)
+        logger.info(f'timer cache found')
         return True, timer_cache
 
     def delete_timer_cache(self):
@@ -153,5 +161,5 @@ class CacheInterface:
         # delete
         os.remove(f"{CACHE_PATH}{split}{self.timer_filename}")
 
-        print(f'\n<timer cache successfully deleted>')
+        logger.info(f'timer cache successfully deleted')
 

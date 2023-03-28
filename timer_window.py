@@ -1,6 +1,13 @@
+
+# make window size fixed
+from kivy import Config
+Config.set('graphics', 'resizable', False)
+
+from kivy.core.window import Window
+Window.size = (250, 200)
+
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.core.window import Window
 from kivy.clock import Clock
 
 from kivy.lang import Builder
@@ -83,6 +90,9 @@ class SimpleTimerSetting(Screen):
 
         # load cache
         self._load_cache()
+
+        # print window size
+        logger.debug(f"window size: {Window.size}")
     
     def on_leave(self, *args):
 
@@ -485,8 +495,6 @@ class WindowManager(ScreenManager):
         pass
 
 kv_file = Builder.load_file("timer_window.kv")
-
-Window.size = (250, 200)
 
 
 class TimerApp(App):
